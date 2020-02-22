@@ -3,8 +3,9 @@ import fs from "fs";
 import morgan from "morgan";
 import path from "path";
 
+import { config } from "./config";
+
 // tslint:disable:no-console
-const PORT = 8000;
 const app = express();
 
 // adds routes to the express server
@@ -29,6 +30,8 @@ fs.readdirSync(routesDir)
 // morgan logs some useful data for each request and response
 morgan("dev");
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+app.listen(config.PORT, () => {
+    console.log(`Server listening on port ${config.PORT}`);
 });
+
+export const server = app;
