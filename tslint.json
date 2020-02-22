@@ -70,9 +70,6 @@
 			"avoid-escape",
 			"avoid-template"
 		],
-		"no-console": [
-			true
-		],
 		"no-shadowed-variable": true,
 		"prefer-readonly": true,
 		"no-require-imports": true,

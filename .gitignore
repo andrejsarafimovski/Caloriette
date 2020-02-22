@@ -6,3 +6,4 @@ coverage
 dst
 **/js
 package-lock.json
+src/types/schema-generated

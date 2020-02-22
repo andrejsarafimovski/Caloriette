@@ -5,14 +5,42 @@
   "main": "index.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc --p .",
-    "prebuild": "rm -rf ./dst",
+    "prebuild": "rm -rf ./dst && npm run generate-code",
     "prestart": "npm run build",
     "start": "node dst/index.js",
     "postbuild": "npm run lint",
+    "generate-code": "sh ./schema/scripts/compile.sh",
     "pretest": "npm run build",
     "test": "npm run mocha",
     "lint": "./node_modules/.bin/tslint -p ./tsconfig.json -c ./tslint.json --fix",
     "mocha": "./node_modules/.bin/nyc --extension=.ts --reporter=lcov --reporter=text-summary ./node_modules/.bin/mocha --recursive ./dst/test --bail --sort --timeout 10000"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "lines": 50,
+    "statements": 50,
+    "functions": 40,
+    "exclude": [
+      "**/test"
+    ],
+    "watermarks": {
+      "branches": [
+        10,
+        50
+      ],
+      "lines": [
+        90,
+        100
+      ],
+      "functions": [
+        90,
+        100
+      ],
+      "statements": [
+        90,
+        100
+      ]
+    }
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
@@ -35,6 +63,7 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.3.0",
     "http-status-codes": "^1.3.2",
+    "ajv": "^6.10.0",
     "morgan": "^1.9.0",
     "uuid": "^3.2.2"
   },
