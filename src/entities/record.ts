@@ -10,40 +10,40 @@ import {
     ViewColumn,
     ViewEntity
 } from "typeorm";
+import { User } from "./index";
 
 @Entity()
-export class User {
-    @PrimaryColumn({
-        type: "varchar",
-        length: 36,
-        nullable: false
-    })
-    id: string;
-
-    @Column({
-        nullable: false,
-        type: "varchar",
-        length: 30
-    })
-    name: string;
+export class Record {
+    @PrimaryColumn()
+    @ManyToOne(type => User, { cascade: true, nullable: false })
+    @JoinColumn()
+    userId: string;
 
     @Column({
         nullable: false,
         type: "varchar",
         length: 100
     })
-    surname: string;
-
-    @Column({
-        nullable: false,
-        type: "blob"
-    })
-    password: Buffer;
+    date: string;
 
     @Column({
         nullable: false,
         type: "varchar",
         length: 100
     })
-    role: string;
+    time: string;
+
+    @Column({
+        nullable: false,
+        type: "varchar",
+        length: 255
+    })
+    text: string;
+
+    @Column({
+        nullable: false,
+        type: "int"
+    })
+    numberOfCalories: number;
 }
+

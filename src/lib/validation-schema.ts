@@ -1,11 +1,8 @@
+import { NextFunction, Request, Response } from "express";
 import HTTP from "http-status-codes";
 import schema from "../schema";
 import { codedError } from "./coded-error";
 
-interface JSONSchema {
-    $id: string;
-    [key: string]: any;
-}
 
 /**
  * Validates an object against schema
@@ -17,7 +14,7 @@ interface JSONSchema {
  * @throws CodedError 500 Unable to validate with the provided parameters
  */
 
-export default function validate(schemaId: string, target: unknown, def = false) {
+function validate(schemaId: string, target: unknown, def = false) {
     const prefix = def ? "default:" : "";
     const fullSchemaURI = `${prefix}schema://${schemaId}.json`;
 
@@ -38,4 +35,32 @@ export default function validate(schemaId: string, target: unknown, def = false)
         );
         throw codedError(HTTP.BAD_REQUEST, `${schemaId} - ${errors.toString()}`);
     }
+}
+
+
+/**
+ * Accepts schemaId which will be used for validation of the HTTP request input (params, body, query)
+ *
+ * @export
+ * @param {string} schemaId ID of the schema schema://```<schemaId>```.json
+ * @returns Object containing wrap function which should be used for wrapping around your request handlers
+ * and a middleware function which should be used before your request handlers
+ */
+export function validation(schemaId: string) {
+    return {
+        wrap: <T = Request>(handler: (req: T, res: Response) => Promise<unknown>) => (req: any, res: Response) => {
+            const payload: {} = { ...req.body, ...req.query, ...req.params };
+            validate(schemaId, payload);
+            return handler(req, res);
+        },
+        middleware: (req: Request, res: Response, next: NextFunction) => {
+            const payload: {} = { ...req.body, ...req.query, ...req.params };
+            try {
+                validate(schemaId, payload);
+            } catch (err) /* istanbul ignore next */ {
+                return res.status(err.code || HTTP.INTERNAL_SERVER_ERROR).send(err);
+            }
+            return next();
+        }
+    };
 }

@@ -2,8 +2,10 @@ import express from "express";
 import fs from "fs";
 import morgan from "morgan";
 import path from "path";
+import { createConnection } from "typeorm";
 
 import { config } from "./config";
+import * as hero from "./entities";
 
 // tslint:disable:no-console
 const app = express();
@@ -30,8 +32,23 @@ fs.readdirSync(routesDir)
 // morgan logs some useful data for each request and response
 morgan("dev");
 
-app.listen(config.PORT, () => {
-    console.log(`Server listening on port ${config.PORT}`);
-});
+export async function startServer() {
+    await createConnection({
+        name: "default",
+        type: "mysql",
+        database: "caloriettedb",
+        username: "root",
+        password: "root12345",
+        host: "localhost",
+        port: 3306,
+        synchronize: true,
+        entities: Object.values(hero),
+    });
+    app.listen(config.PORT, () => {
+        console.log(`Server listening on port ${config.PORT}`);
+    });
+}
 
-export const server = app;
+if (process.env.NODE_ENV !== "test") {
+    startServer();
+}

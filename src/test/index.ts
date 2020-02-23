@@ -2,10 +2,11 @@ process.env.NODE_ENV = "test";
 process.env.PORT = "8000";
 
 // tslint:disable
-import "../";
+import { startServer } from "../";
 
 before(async () => {
     console.info("BEFORE");
+    await startServer();
     // await new Promise(res => {
     //     setTimeout(() => {
     //         res();
