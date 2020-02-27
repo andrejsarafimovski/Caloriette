@@ -4,16 +4,22 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    OneToOne,
     PrimaryColumn,
-    PrimaryGeneratedColumn,
-    ViewColumn,
-    ViewEntity
 } from "typeorm";
 import { User } from "./index";
 
+// tslint:disable:quotemark
 @Entity()
+@Check(`"numberOfCalories" > 0`)
 export class Record {
+
+    @PrimaryColumn({
+        type: "varchar",
+        length: 36,
+        nullable: false
+    })
+    id: string;
+
     @PrimaryColumn()
     @ManyToOne(type => User, { cascade: true, nullable: false })
     @JoinColumn()
@@ -45,5 +51,10 @@ export class Record {
         type: "int"
     })
     numberOfCalories: number;
-}
 
+    @Column({
+        type: "boolean",
+        nullable: false
+    })
+    lessThanExpectedCalories: boolean;
+}

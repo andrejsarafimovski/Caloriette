@@ -1,12 +1,11 @@
 import { json as parseJSON } from "body-parser";
 import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
-import { validation } from "../lib/validation-schema";
 
 const app = express();
 
 /**
- * Creates a user - SIGNUP
+ * Creates a record
  */
 app.post(
     "/",
@@ -17,18 +16,7 @@ app.post(
 );
 
 /**
- * Logs in a user - LOGIN
- */
-app.post(
-    "/login",
-    parseJSON(),
-    errorHandler.wrap(req => {
-        return { done: true };
-    })
-);
-
-/**
- * Fetch User data
+ * Get a record
  */
 app.get(
     "/:id",
@@ -39,7 +27,7 @@ app.get(
 );
 
 /**
- * Update User data
+ * Update a record
  */
 app.put(
     "/:id",
@@ -50,7 +38,7 @@ app.put(
 );
 
 /**
- * Update User data
+ * Delete a record
  */
 app.delete(
     "/:id",

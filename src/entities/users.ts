@@ -1,24 +1,22 @@
+// tslint:disable:max-classes-per-file
 import {
     Check,
     Column,
     Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToOne,
     PrimaryColumn,
-    PrimaryGeneratedColumn,
-    ViewColumn,
-    ViewEntity
 } from "typeorm";
 
+// tslint:disable:quotemark
 @Entity()
+@Check(`"role" in ("user","admin","moderator")`)
+@Check(`"expectedCaloriesPerDay" > 0`)
 export class User {
     @PrimaryColumn({
         type: "varchar",
-        length: 36,
+        length: 100,
         nullable: false
     })
-    id: string;
+    email: string;
 
     @Column({
         nullable: false,
@@ -46,4 +44,10 @@ export class User {
         length: 100
     })
     role: string;
+
+    @Column({
+        nullable: false,
+        type: "int"
+    })
+    expectedCaloriesPerDay: number;
 }
