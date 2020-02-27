@@ -16,7 +16,7 @@ export class UserManager {
     async login(loginData: LoginUserRequest): Promise<LoginUserResponse> {
         let user: User;
         try {
-            user = await this.get(loginData.email);
+            user = await this.getRaw(loginData.email);
         } catch (err) {
             if (err.code === HTTP.NOT_FOUND) {
                 throw codedError(HTTP.BAD_REQUEST, "Wrong Credentials");
@@ -30,7 +30,7 @@ export class UserManager {
 
     async signup(signupData: SignupUserRequest): Promise<SignupUserResponse> {
         try {
-            await this.get(signupData.email);
+            await this.getRaw(signupData.email);
             throw codedError(HTTP.BAD_REQUEST, `User with email ${signupData.email} already exists`);
         } catch (err) {
             if (err.code !== HTTP.NOT_FOUND) {
@@ -49,26 +49,40 @@ export class UserManager {
         return { done: true };
     }
 
+    private async getRaw(email: string): Promise<User> {
+        const user = await this.userTable.findOne({ email });
+        if (!user) {
+            throw codedError(HTTP.NOT_FOUND, `User ${email} does not exist`);
+        }
+        return user;
+    }
+
     async get(email: string): Promise<GetUserResponse> {
-        const user = await this.userTable
-            .createQueryBuilder("user")
-            .where("user.email = :email", { email })
-            .getOne();
+        const user = await this.getRaw(email);
         if (!user) {
             throw codedError(HTTP.NOT_FOUND, `User ${email} does not exist`);
         }
         delete user.password;
+        delete user.role;
         return user;
     }
 
     async update(email: string, updateData: UpdateUserRequest): Promise<UpdateUserResponse> {
-        const user = await this.get(email);
-
+        const user = await this.getRaw(email);
+        const updateUser: Partial<User> = {
+            expectedCaloriesPerDay: updateData.expectedCaloriesPerDay || user.expectedCaloriesPerDay,
+            name: updateData.name || user.name,
+            password: updateData.password ?
+                Buffer.from(updateData.password) :
+                user.password,
+            surname: updateData.surname || user.surname
+        };
+        await this.userTable.update({ email }, updateUser);
         return { done: true };
     }
 
     async delete(email: string): Promise<DeleteUserResponse> {
-        const user = await this.get(email);
+        await this.getRaw(email);
         await this.userTable.delete({ email });
         return { done: true };
     }
