@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "schema://getUserRequest.json",
+    "title": "getUserRequest",
+    "operationId": "getUserRequest",
+    "description": "Get User Request Data",
+    "type": "object",
+    "properties": {
+        "email": {
+            "type": "string",
+            "description": "Name of the User"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "email"
+    ]
+}

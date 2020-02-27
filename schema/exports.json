@@ -12,6 +12,24 @@
         },
         "loginUserResponse": {
             "$ref": "./loginUserResponse.json"
+        },
+        "deleteUserRequest": {
+            "$ref": "./deleteUserRequest.json"
+        },
+        "deleteUserResponse": {
+            "$ref": "./deleteUserResponse.json"
+        },
+        "getUserRequest": {
+            "$ref": "./getUserRequest.json"
+        },
+        "getUserResponse": {
+            "$ref": "./getUserResponse.json"
+        },
+        "updateUserRequest": {
+            "$ref": "./updateUserRequest.json"
+        },
+        "updateUserResponse": {
+            "$ref": "./updateUserResponse.json"
         }
     },
     "additionalProperties": false

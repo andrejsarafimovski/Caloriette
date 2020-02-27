@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "schema://signupUserResponse.json",
-    "title": "signupUserResponse",
-    "operationId": "signupUserResponse",
-    "description": "Sign Up User Response Data",
+    "$id": "schema://deleteUserResponse.json",
+    "title": "deleteUserResponse",
+    "operationId": "deleteUserResponse",
+    "description": "Delete User Response Data",
     "type": "object",
     "properties": {
         "done": {

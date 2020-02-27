@@ -2,6 +2,7 @@ import { json as parseJSON } from "body-parser";
 import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
 import { validation } from "../lib/validation-schema";
+import { UserManager } from "../models/user-manager";
 
 const app = express();
 
@@ -11,8 +12,9 @@ const app = express();
 app.post(
     "/",
     parseJSON(),
+    validation("signupUserRequest").middleware,
     errorHandler.wrap(req => {
-        return { done: true };
+        return new UserManager().signup(req.body);
     })
 );
 
@@ -22,8 +24,9 @@ app.post(
 app.post(
     "/login",
     parseJSON(),
+    validation("loginUserRequest").middleware,
     errorHandler.wrap(req => {
-        return { done: true };
+        return new UserManager().login(req.body);
     })
 );
 
@@ -31,10 +34,11 @@ app.post(
  * Fetch User data
  */
 app.get(
-    "/:id",
+    "/:email",
+    validation("getUserRequest").middleware,
     errorHandler.wrap(req => {
-        const { id } = req.params;
-        return { done: true };
+        const { email } = req.params;
+        return new UserManager().get(email);
     })
 );
 
@@ -42,10 +46,12 @@ app.get(
  * Update User data
  */
 app.put(
-    "/:id",
+    "/:email",
+    parseJSON(),
+    validation("updateUserRequest").middleware,
     errorHandler.wrap(req => {
-        const { id } = req.params;
-        return { done: true };
+        const { email } = req.params;
+        return new UserManager().update(email, req.body);
     })
 );
 
@@ -53,10 +59,11 @@ app.put(
  * Update User data
  */
 app.delete(
-    "/:id",
+    "/:email",
+    validation("deleteUserRequest").middleware,
     errorHandler.wrap(req => {
-        const { id } = req.params;
-        return { done: true };
+        const { email } = req.params;
+        return new UserManager().delete(email);
     })
 );
 
