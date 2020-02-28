@@ -43,6 +43,18 @@
         "getRecordResponse": {
             "$ref": "./getRecordResponse.json"
         },
+        "getAllUsersRequest": {
+            "$ref": "./getAllUsersRequest.json"
+        },
+        "getAllUsersResponse": {
+            "$ref": "./getAllUsersResponse.json"
+        },
+        "getAllRecordsRequest": {
+            "$ref": "./getAllRecordsRequest.json"
+        },
+        "getAllRecordsResponse": {
+            "$ref": "./getAllRecordsResponse.json"
+        },
         "updateUserRequest": {
             "$ref": "./updateUserRequest.json"
         },

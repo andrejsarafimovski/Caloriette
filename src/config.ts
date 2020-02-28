@@ -23,8 +23,14 @@ if (
 
 export const config = {
     PORT: parseInt(PORT!) || 80,
-    secrets: {
-        jwt: jwtSecret,
-        encryption: encryptionSecret
+    encryption: {
+        secret: encryptionSecret
+    },
+    pagination: {
+        resultsPerPage: 10
+    },
+    jwt: {
+        secret: jwtSecret,
+        duration: 3600
     }
 };

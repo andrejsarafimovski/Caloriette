@@ -2,6 +2,7 @@ import { json as parseJSON } from "body-parser";
 import express from "express";
 
 import * as errorHandler from "../lib/async-response-handler";
+import { authorize } from "../lib/authorization";
 import { validation } from "../lib/validation-schema";
 import { UserManager } from "../models/user-manager";
 
@@ -34,10 +35,24 @@ app.post(
 );
 
 /**
- * Fetch User data
+ * Get All Users Data
+ */
+app.get(
+    "/",
+    authorize(),
+    validation("getAllUsersRequest").middleware,
+    errorHandler.wrap(req => {
+        const { page } = req.query;
+        return new UserManager().getAll(page);
+    })
+);
+
+/**
+ * Get User data
  */
 app.get(
     "/:email",
+    authorize(),
     validation("getUserRequest").middleware,
     errorHandler.wrap(req => {
         const { email } = req.params;
@@ -50,6 +65,7 @@ app.get(
  */
 app.put(
     "/:email",
+    authorize(),
     parseJSON(),
     validation("updateUserRequest").middleware,
     errorHandler.wrap(req => {
@@ -60,10 +76,11 @@ app.put(
 );
 
 /**
- * Update User data
+ * Delete User data
  */
 app.delete(
     "/:email",
+    authorize(),
     validation("deleteUserRequest").middleware,
     errorHandler.wrap(req => {
         const { email } = req.params;

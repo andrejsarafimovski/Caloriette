@@ -1,19 +1,22 @@
 import HTTP from "http-status-codes";
 import jwt from "jsonwebtoken";
-import { getConnection, Repository } from "typeorm";
+import { getConnection, Repository, FindManyOptions } from "typeorm";
 
 import { config } from "../config";
 import { User } from "../entities";
 import { codedError } from "../lib/coded-error";
 import { hashPassword } from "../lib/password-hash";
-import { DeleteUserResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
+import { DeleteUserResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse, GetAllUsersResponse } from "../types/schema-generated/index";
+import { RecordManager } from "./records-manager";
 
 
 export class UserManager {
     private readonly userTable: Repository<User>;
+    private readonly recordManager: RecordManager;
 
     constructor() {
         this.userTable = getConnection().getRepository(User);
+        this.recordManager = new RecordManager();
     }
 
     async login({ email, password }: LoginUserRequest): Promise<LoginUserResponse> {
@@ -29,8 +32,11 @@ export class UserManager {
         if (user.password !== hashPassword(password)) {
             throw codedError(HTTP.BAD_REQUEST, "Wrong Credentials");
         }
-        // check if password is correct
-        const accessToken = jwt.sign({ email: user.email, role: user.role }, config.secrets.jwt);
+        const accessToken = jwt.sign(
+            { email: user.email, role: user.role },
+            config.jwt.secret,
+            { expiresIn: config.jwt.duration }
+        );
         return { done: true, accessToken };
     }
 
@@ -64,13 +70,22 @@ export class UserManager {
     }
 
     async get(email: string): Promise<GetUserResponse> {
-        const user = await this.getRaw(email);
+        const user = await this.userTable.findOne(email, { select: ["email", "expectedCaloriesPerDay", "name", "surname"] });
         if (!user) {
             throw codedError(HTTP.NOT_FOUND, `User ${email} does not exist`);
         }
-        delete user.password;
-        delete user.role;
         return user;
+    }
+
+    async getAll(page?: number): Promise<GetAllUsersResponse> {
+        const findOptions: FindManyOptions<User> = {
+            select: ["email", "expectedCaloriesPerDay", "name", "surname"],
+        };
+        if (page) {
+            findOptions.take = config.pagination.resultsPerPage;
+            findOptions.skip = (page - 1) * config.pagination.resultsPerPage;
+        }
+        return this.userTable.find(findOptions);
     }
 
     async update(email: string, updateData: UpdateUserRequest): Promise<UpdateUserResponse> {
@@ -84,6 +99,9 @@ export class UserManager {
             surname: updateData.surname || user.surname
         };
         await this.userTable.update({ email }, updateUser);
+        if (updateData.expectedCaloriesPerDay) {
+            await this.recordManager.updateRecordsCaloriesForUser(user.email, updateData.expectedCaloriesPerDay);
+        }
         return { done: true };
     }
 

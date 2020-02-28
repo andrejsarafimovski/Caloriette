@@ -1,10 +1,11 @@
 import HTTP from "http-status-codes";
-import { Repository } from "typeorm";
+import { FindManyOptions, Repository } from "typeorm";
 import uuid from "uuid";
 
+import { config } from "../config";
 import { Record } from "../entities";
 import { codedError } from "../lib/coded-error";
-import { CreateRecordRequest, CreateRecordResponse, DeleteRecordRequest, DeleteRecordResponse, GetRecordResponse } from "../types/schema-generated";
+import { CreateRecordRequest, CreateRecordResponse, DeleteRecordRequest, DeleteRecordResponse, GetAllRecordsResponse, GetAllUsersResponse, GetRecordResponse } from "../types/schema-generated";
 import { UserManager } from "./user-manager";
 
 
@@ -18,11 +19,23 @@ export class RecordManager {
     }
 
     async get(id: string): Promise<GetRecordResponse> {
-        const record = await this.recordTable.findOne({ id });
+        const record = await this.recordTable.findOne(id);
         if (!record) {
             throw codedError(HTTP.NOT_FOUND, `Record with id ${id} not found`);
         }
         return record;
+    }
+
+    async getAll(userEmail?: string, page?: number): Promise<GetAllRecordsResponse> {
+        const findOptions: FindManyOptions<Record> = {};
+        if (page) {
+            findOptions.take = config.pagination.resultsPerPage;
+            findOptions.skip = (page - 1) * config.pagination.resultsPerPage;
+        }
+        if (userEmail) {
+            findOptions.where = { userEmail };
+        }
+        return this.recordTable.find(findOptions);
     }
 
     async create(createRecord: CreateRecordRequest): Promise<CreateRecordResponse> {
@@ -47,8 +60,35 @@ export class RecordManager {
 
     async delete(id: string): Promise<DeleteRecordResponse> {
         await this.get(id);
-        await this.recordTable.delete({ id });
+        await this.recordTable.delete(id);
         return { done: true };
+    }
+
+    async updateRecordsCaloriesForUser(userEmail: string, expectedCaloriesPerDay: number) {
+        const userRecords = await this.getAll(userEmail);
+        const userRecordsByDate = userRecords.reduce((acc, ur) => {
+            if (!acc[ur.date]) {
+                acc[ur.date] = [];
+            }
+            acc[ur.date].push(ur);
+            return {
+                ...acc
+            };
+        }, {} as { [key: string]: Record[] });
+        const updatedUserRecords = Object.values(userRecordsByDate).reduce((acc, ur) => {
+            let totalCalories = 0;
+            const upur = ur.map(r => {
+                totalCalories += r.numberOfCalories;
+                return {
+                    ...r,
+                    lessThanExpectedCalories: expectedCaloriesPerDay > totalCalories,
+                };
+            });
+            return [...acc, ...upur];
+        }, [] as Record[]);
+        await Promise.all(
+            updatedUserRecords.map(uur => this.recordTable.update(uur.id, uur))
+        );
     }
 
     private async getCalories(text: string) { // TODO
