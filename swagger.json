@@ -1,15 +1,14 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "description": "API for Caloriette",
-        "version": "1.0.0",
-        "title": "Caloriette"
+        "description": "API for Kube Microservice",
+        "version": "2.0.0",
+        "title": "Microtica Kube Microservice"
     },
     "paths": {
-        "/signup": {
-            "post": {
-                "summary": "Sign Up User Request Data",
-                "operationId": "signupUserRequest",
+        "/users": {
+            "get": {
+                "summary": "Get All Users",
                 "security": [
                     {
                         "BearerAuth": []
@@ -17,22 +16,22 @@
                 ],
                 "parameters": [
                     {
-                        "in": "header",
-                        "name": "projectId",
+                        "in": "query",
+                        "name": "page",
                         "schema": {
-                            "type": "string",
-                            "description": "The id of the project"
+                            "type": "number",
+                            "minimum": 1
                         },
-                        "required": true
+                        "required": false
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Sign Up User Request Data",
+                        "description": "Get All Users Response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SignupUserRequestResponse"
+                                    "$ref": "#/components/schemas/GetAllUsersResponse"
                                 }
                             }
                         }
@@ -46,26 +45,234 @@
                     "403": {
                         "description": "Forbidden"
                     },
-                    "404": {
-                        "description": "Resource not found"
+                    "default": {
+                        "description": "General server error"
+                    }
+                }
+            },
+            "post": {
+                "summary": "SignUp a User",
+                "responses": {
+                    "200": {
+                        "description": "SignUp User Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignupUserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     },
                     "default": {
                         "description": "General server error"
                     }
                 },
-                "tags": [
-                    "caloriette"
-                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/SignupUserRequestRequest"
+                                "$ref": "#/components/schemas/SignupUserRequest"
                             }
                         }
                     }
                 }
             }
+        },
+        "/users/login": {
+            "post": {
+                "summary": "Login a User",
+                "responses": {
+                    "200": {
+                        "description": "Login a User Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginUserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginUserRequest"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{email}": {
+            "get": {
+                "summary": "Get a User",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "email",
+                        "schema": {
+                            "type": "string",
+                            "description": "Email of the User"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a Users Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetUserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a User",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "email",
+                        "schema": {
+                            "type": "string",
+                            "description": "Email of the User"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Update a Users Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateUserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a User",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "email",
+                        "schema": {
+                            "type": "string",
+                            "description": "Email of the User"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete a Users Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeleteUserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                }
+            }
+        },
+        "/records": {
+            "get": {},
+            "post": {}
+        },
+        "/records/{id}": {
+            "get": {},
+            "put": {},
+            "delete": {}
         }
     },
     "components": {
@@ -76,7 +283,73 @@
             }
         },
         "schemas": {
-            "SignupUserRequestResponse": {
+            "CreateRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "userEmail": {
+                        "type": "string",
+                        "description": "Email of the User",
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Date of the Record",
+                        "minLength": 10,
+                        "maxLength": 10
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time of the Record",
+                        "minLength": 8,
+                        "maxLength": 8
+                    },
+                    "text": {
+                        "type": "string"
+                    },
+                    "numberOfCalories": {
+                        "type": "number",
+                        "description": "Number of calories for the whole record"
+                    }
+                },
+                "required": [
+                    "userEmail",
+                    "date",
+                    "time",
+                    "text"
+                ]
+            },
+            "CreateRecordResponse": {
+                "type": "object",
+                "properties": {
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "done",
+                    "id"
+                ]
+            },
+            "DeleteRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Id of the Record",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "id"
+                ]
+            },
+            "DeleteRecordResponse": {
                 "type": "object",
                 "properties": {
                     "done": {
@@ -87,16 +360,302 @@
                     "done"
                 ]
             },
-            "SignupUserRequestRequest": {
+            "DeleteUserRequest": {
                 "type": "object",
                 "properties": {
-                    "name": {
+                    "email": {
                         "type": "string",
                         "description": "Name of the User"
+                    }
+                },
+                "required": [
+                    "email"
+                ]
+            },
+            "DeleteUserResponse": {
+                "type": "object",
+                "properties": {
+                    "done": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "done"
+                ]
+            },
+            "GetAllRecordsRequest": {
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "type": "number",
+                        "minimum": 1
+                    },
+                    "userEmail": {
+                        "type": "string",
+                        "description": "Email of the User",
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                    }
+                }
+            },
+            "GetAllRecordsResponse": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Id of the Record",
+                            "format": "uuid"
+                        },
+                        "userEmail": {
+                            "type": "string",
+                            "description": "Email of the User",
+                            "maxLength": 100,
+                            "minLength": 0,
+                            "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                        },
+                        "date": {
+                            "type": "string",
+                            "description": "Date of the Record",
+                            "minLength": 10,
+                            "maxLength": 10
+                        },
+                        "time": {
+                            "type": "string",
+                            "description": "Time of the Record",
+                            "minLength": 8,
+                            "maxLength": 8
+                        },
+                        "text": {
+                            "type": "string"
+                        },
+                        "numberOfCalories": {
+                            "type": "number",
+                            "description": "Number of calories for the whole record"
+                        },
+                        "lessThanExpectedCalories": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "userEmail",
+                        "date",
+                        "time",
+                        "text",
+                        "numberOfCalories",
+                        "lessThanExpectedCalories"
+                    ]
+                }
+            },
+            "GetAllUsersRequest": {
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "type": "number",
+                        "minimum": 1
+                    }
+                }
+            },
+            "GetAllUsersResponse": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "description": "Email of the User",
+                            "maxLength": 100,
+                            "minLength": 0,
+                            "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the User",
+                            "minLength": 3,
+                            "maxLength": 30
+                        },
+                        "surname": {
+                            "type": "string",
+                            "description": "Surname of the User",
+                            "minLength": 3,
+                            "maxLength": 100
+                        },
+                        "expectedCaloriesPerDay": {
+                            "type": "number",
+                            "description": "Expected daily intake of calories per day for the User"
+                        }
+                    },
+                    "required": [
+                        "email",
+                        "surname",
+                        "expectedCaloriesPerDay",
+                        "name"
+                    ]
+                }
+            },
+            "GetRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Id of the Record"
+                    }
+                },
+                "required": [
+                    "id"
+                ]
+            },
+            "GetRecordResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Id of the Record",
+                        "format": "uuid"
+                    },
+                    "userEmail": {
+                        "type": "string",
+                        "description": "Email of the User",
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Date of the Record",
+                        "minLength": 10,
+                        "maxLength": 10
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time of the Record",
+                        "minLength": 8,
+                        "maxLength": 8
+                    },
+                    "text": {
+                        "type": "string"
+                    },
+                    "numberOfCalories": {
+                        "type": "number",
+                        "description": "Number of calories for the whole record"
+                    },
+                    "lessThanExpectedCalories": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "userEmail",
+                    "date",
+                    "time",
+                    "text",
+                    "numberOfCalories",
+                    "lessThanExpectedCalories"
+                ]
+            },
+            "GetUserRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "Name of the User"
+                    }
+                },
+                "required": [
+                    "email"
+                ]
+            },
+            "GetUserResponse": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "Email of the User",
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the User",
+                        "minLength": 3,
+                        "maxLength": 30
                     },
                     "surname": {
                         "type": "string",
+                        "description": "Surname of the User",
+                        "minLength": 3,
+                        "maxLength": 100
+                    },
+                    "expectedCaloriesPerDay": {
+                        "type": "number",
+                        "description": "Expected daily intake of calories per day for the User"
+                    }
+                },
+                "required": [
+                    "email",
+                    "surname",
+                    "expectedCaloriesPerDay",
+                    "name"
+                ]
+            },
+            "LoginUserRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "Name of the User"
+                    },
+                    "password": {
+                        "type": "string",
                         "description": "Surname of the User"
+                    }
+                },
+                "required": [
+                    "email",
+                    "password"
+                ]
+            },
+            "LoginUserResponse": {
+                "type": "object",
+                "properties": {
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "accessToken": {
+                        "type": "string",
+                        "description": "The Access Token for the user"
+                    }
+                },
+                "required": [
+                    "done",
+                    "accessToken"
+                ]
+            },
+            "SignupUserRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "Email of the User",
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the User",
+                        "minLength": 3,
+                        "maxLength": 30
+                    },
+                    "surname": {
+                        "type": "string",
+                        "description": "Surname of the User",
+                        "minLength": 3,
+                        "maxLength": 100
                     },
                     "expectedCaloriesPerDay": {
                         "type": "number",
@@ -111,7 +670,65 @@
                     "name",
                     "surname",
                     "expectedCaloriesPerDay",
-                    "password"
+                    "password",
+                    "email"
+                ]
+            },
+            "SignupUserResponse": {
+                "type": "object",
+                "properties": {
+                    "done": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "done"
+                ]
+            },
+            "UpdateUserRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "Email of the User",
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the User",
+                        "minLength": 3,
+                        "maxLength": 30
+                    },
+                    "surname": {
+                        "type": "string",
+                        "description": "Surname of the User",
+                        "minLength": 3,
+                        "maxLength": 100
+                    },
+                    "expectedCaloriesPerDay": {
+                        "type": "number",
+                        "description": "Expected daily intake of calories per day for the User"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": "password for loging into the application"
+                    }
+                },
+                "required": [
+                    "email"
+                ]
+            },
+            "UpdateUserResponse": {
+                "type": "object",
+                "properties": {
+                    "done": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "done"
                 ]
             }
         }
