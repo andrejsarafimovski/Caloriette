@@ -36,11 +36,11 @@ export async function startServer() {
     await createConnection({
         name: "default",
         type: "mysql",
-        database: "caloriettedb",
-        username: "root",
-        password: "root12345",
-        host: "localhost",
-        port: 3306,
+        database: config.database.name,
+        username: config.database.username,
+        password: config.database.password,
+        host: config.database.host,
+        port: config.database.port,
         synchronize: true,
         entities: Object.values(hero),
     });

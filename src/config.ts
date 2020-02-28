@@ -10,12 +10,22 @@
 const {
     PORT,
     jwtSecret,
-    encryptionSecret
+    hashSecret,
+    databaseHost,
+    databasePort,
+    databaseName,
+    databaseUsername,
+    databasePassword,
 } = process.env;
 
 /* istanbul ignore if */ // won't test the throw
 if (
-    !encryptionSecret ||
+    !databaseHost ||
+    !databasePort ||
+    !databaseName ||
+    !databaseUsername ||
+    !databasePassword ||
+    !hashSecret ||
     !jwtSecret
 ) {
     throw new Error("Fatal Error: missing required configurations in environment");
@@ -23,8 +33,8 @@ if (
 
 export const config = {
     PORT: parseInt(PORT!) || 80,
-    encryption: {
-        secret: encryptionSecret
+    hash: {
+        secret: hashSecret
     },
     pagination: {
         resultsPerPage: 10
@@ -32,5 +42,12 @@ export const config = {
     jwt: {
         secret: jwtSecret,
         duration: 3600
+    },
+    database: {
+        host: databaseHost,
+        port: parseInt(databasePort),
+        password: databasePassword,
+        username: databaseUsername,
+        name: databaseName
     }
 };

@@ -1,12 +1,12 @@
 import HTTP from "http-status-codes";
 import jwt from "jsonwebtoken";
-import { getConnection, Repository, FindManyOptions } from "typeorm";
+import { FindManyOptions, getConnection, Repository } from "typeorm";
 
 import { config } from "../config";
 import { User } from "../entities";
 import { codedError } from "../lib/coded-error";
 import { hashPassword } from "../lib/password-hash";
-import { DeleteUserResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse, GetAllUsersResponse } from "../types/schema-generated/index";
+import { DeleteUserResponse, GetAllUsersResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
 import { RecordManager } from "./records-manager";
 
 

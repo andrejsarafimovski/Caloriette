@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "schema://signupUserResponse.json",
+    "$id": "schema://loginUserResponse.json",
     "title": "loginUserResponse",
     "operationId": "loginUserResponse",
     "description": "Log In User Response Data",

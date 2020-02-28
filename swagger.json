@@ -1,0 +1,119 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "description": "API for Caloriette",
+        "version": "1.0.0",
+        "title": "Caloriette"
+    },
+    "paths": {
+        "/signup": {
+            "post": {
+                "summary": "Sign Up User Request Data",
+                "operationId": "signupUserRequest",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "projectId",
+                        "schema": {
+                            "type": "string",
+                            "description": "The id of the project"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sign Up User Request Data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignupUserRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                },
+                "tags": [
+                    "caloriette"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignupUserRequestRequest"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "SignupUserRequestResponse": {
+                "type": "object",
+                "properties": {
+                    "done": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "done"
+                ]
+            },
+            "SignupUserRequestRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the User"
+                    },
+                    "surname": {
+                        "type": "string",
+                        "description": "Surname of the User"
+                    },
+                    "expectedCaloriesPerDay": {
+                        "type": "number",
+                        "description": "Expected daily intake of calories per day for the User"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": "password for loging into the application"
+                    }
+                },
+                "required": [
+                    "name",
+                    "surname",
+                    "expectedCaloriesPerDay",
+                    "password"
+                ]
+            }
+        }
+    }
+}
