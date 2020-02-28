@@ -25,7 +25,8 @@
     "statements": 50,
     "functions": 40,
     "exclude": [
-      "**/test"
+      "**/test",
+      "**/sdk"
     ],
     "watermarks": {
       "branches": [
