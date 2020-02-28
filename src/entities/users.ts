@@ -34,9 +34,10 @@ export class User {
 
     @Column({
         nullable: false,
-        type: "blob"
+        type: "varchar",
+        length: 255
     })
-    password: Buffer;
+    password: string;
 
     @Column({
         nullable: false,

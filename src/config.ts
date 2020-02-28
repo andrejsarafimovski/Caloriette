@@ -8,16 +8,23 @@
 // tslint:disable
 
 const {
-    PORT
+    PORT,
+    jwtSecret,
+    encryptionSecret
 } = process.env;
 
 /* istanbul ignore if */ // won't test the throw
 if (
-    false
+    !encryptionSecret ||
+    !jwtSecret
 ) {
     throw new Error("Fatal Error: missing required configurations in environment");
 }
 
 export const config = {
-    PORT: parseInt(PORT!) || 80
+    PORT: parseInt(PORT!) || 80,
+    secrets: {
+        jwt: jwtSecret,
+        encryption: encryptionSecret
+    }
 };

@@ -1,6 +1,9 @@
 import { json as parseJSON } from "body-parser";
 import express from "express";
+
 import * as errorHandler from "../lib/async-response-handler";
+import { validation } from "../lib/validation-schema";
+import { RecordManager } from "../models/records-manager";
 
 const app = express();
 
@@ -10,8 +13,10 @@ const app = express();
 app.post(
     "/",
     parseJSON(),
+    validation("createRecordRequest").middleware,
     errorHandler.wrap(req => {
-        return { done: true };
+        const { body } = req;
+        return new RecordManager().create(body);
     })
 );
 
@@ -20,9 +25,10 @@ app.post(
  */
 app.get(
     "/:id",
+    validation("getRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { id } = req.params;
-        return { done: true };
+        return new RecordManager().get(id);
     })
 );
 
@@ -31,9 +37,11 @@ app.get(
  */
 app.put(
     "/:id",
+    validation("updateRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { id } = req.params;
-        return { done: true };
+        const { body } = req.body;
+        return new RecordManager().update(id, body);
     })
 );
 
@@ -42,9 +50,10 @@ app.put(
  */
 app.delete(
     "/:id",
+    validation("deleteRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { id } = req.params;
-        return { done: true };
+        return new RecordManager().delete(id);
     })
 );
 

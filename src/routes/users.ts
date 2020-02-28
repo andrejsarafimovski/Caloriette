@@ -1,5 +1,6 @@
 import { json as parseJSON } from "body-parser";
 import express from "express";
+
 import * as errorHandler from "../lib/async-response-handler";
 import { validation } from "../lib/validation-schema";
 import { UserManager } from "../models/user-manager";
@@ -14,7 +15,8 @@ app.post(
     parseJSON(),
     validation("signupUserRequest").middleware,
     errorHandler.wrap(req => {
-        return new UserManager().signup(req.body);
+        const { body } = req;
+        return new UserManager().signup(body);
     })
 );
 
@@ -26,7 +28,8 @@ app.post(
     parseJSON(),
     validation("loginUserRequest").middleware,
     errorHandler.wrap(req => {
-        return new UserManager().login(req.body);
+        const { body } = req;
+        return new UserManager().login(body);
     })
 );
 
@@ -51,7 +54,8 @@ app.put(
     validation("updateUserRequest").middleware,
     errorHandler.wrap(req => {
         const { email } = req.params;
-        return new UserManager().update(email, req.body);
+        const { body } = req;
+        return new UserManager().update(email, body);
     })
 );
 

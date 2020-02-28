@@ -6,6 +6,7 @@ import {
     ManyToOne,
     PrimaryColumn,
 } from "typeorm";
+
 import { User } from "./index";
 
 // tslint:disable:quotemark
@@ -23,7 +24,7 @@ export class Record {
     @PrimaryColumn()
     @ManyToOne(type => User, { cascade: true, nullable: false })
     @JoinColumn()
-    userId: string;
+    userEmail: string;
 
     @Column({
         nullable: false,

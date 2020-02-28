@@ -1,6 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "createRecordRequest": {
+            "$ref": "./createRecordRequest.json"
+        },
+        "createRecordResponse": {
+            "$ref": "./createRecordResponse.json"
+        },
         "signupUserRequest": {
             "$ref": "./signupUserRequest.json"
         },
@@ -13,6 +19,12 @@
         "loginUserResponse": {
             "$ref": "./loginUserResponse.json"
         },
+        "deleteRecordRequest": {
+            "$ref": "./deleteRecordRequest.json"
+        },
+        "deleteRecordResponse": {
+            "$ref": "./deleteRecordResponse.json"
+        },
         "deleteUserRequest": {
             "$ref": "./deleteUserRequest.json"
         },
@@ -24,6 +36,12 @@
         },
         "getUserResponse": {
             "$ref": "./getUserResponse.json"
+        },
+        "getRecordRequest": {
+            "$ref": "./getRecordRequest.json"
+        },
+        "getRecordResponse": {
+            "$ref": "./getRecordResponse.json"
         },
         "updateUserRequest": {
             "$ref": "./updateUserRequest.json"

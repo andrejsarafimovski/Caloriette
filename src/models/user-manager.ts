@@ -1,10 +1,13 @@
 import HTTP from "http-status-codes";
 import jwt from "jsonwebtoken";
 import { getConnection, Repository } from "typeorm";
+
+import { config } from "../config";
 import { User } from "../entities";
 import { codedError } from "../lib/coded-error";
+import { hashPassword } from "../lib/password-hash";
+import { DeleteUserResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
 
-import { DeleteUserRequest, DeleteUserResponse, GetUserRequest, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
 
 export class UserManager {
     private readonly userTable: Repository<User>;
@@ -13,18 +16,21 @@ export class UserManager {
         this.userTable = getConnection().getRepository(User);
     }
 
-    async login(loginData: LoginUserRequest): Promise<LoginUserResponse> {
+    async login({ email, password }: LoginUserRequest): Promise<LoginUserResponse> {
         let user: User;
         try {
-            user = await this.getRaw(loginData.email);
+            user = await this.getRaw(email);
         } catch (err) {
             if (err.code === HTTP.NOT_FOUND) {
                 throw codedError(HTTP.BAD_REQUEST, "Wrong Credentials");
             }
             throw err;
         }
+        if (user.password !== hashPassword(password)) {
+            throw codedError(HTTP.BAD_REQUEST, "Wrong Credentials");
+        }
         // check if password is correct
-        const accessToken = jwt.sign({ email: user.email, role: user.role }, "secret");
+        const accessToken = jwt.sign({ email: user.email, role: user.role }, config.secrets.jwt);
         return { done: true, accessToken };
     }
 
@@ -41,7 +47,7 @@ export class UserManager {
             email: signupData.email,
             expectedCaloriesPerDay: signupData.expectedCaloriesPerDay,
             name: signupData.name,
-            password: Buffer.from(signupData.password), // to encrypt
+            password: hashPassword(signupData.password),
             role: "user",
             surname: signupData.surname,
         };
@@ -73,7 +79,7 @@ export class UserManager {
             expectedCaloriesPerDay: updateData.expectedCaloriesPerDay || user.expectedCaloriesPerDay,
             name: updateData.name || user.name,
             password: updateData.password ?
-                Buffer.from(updateData.password) :
+                hashPassword(updateData.password) :
                 user.password,
             surname: updateData.surname || user.surname
         };
