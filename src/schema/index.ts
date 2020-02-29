@@ -9,11 +9,8 @@ const ajv = new Ajv({
     useDefaults: true,
     jsonPointers: true
 });
-console.debug("Initializing schema");
 
 const schemaDir = path.join(__dirname, "../../schema");
-
-console.debug("Adding definitions");
 
 // read the schema directory
 const allFileNames = fs.readdirSync(schemaDir);
@@ -21,7 +18,6 @@ const allFileNames = fs.readdirSync(schemaDir);
 // Here all the files will be indexed and cached to ajv
 // and then they can be used by reference (id)
 allFileNames.filter(fileName => fileName.endsWith(".json")).forEach(schemaFileName => {
-    console.debug(`Adding schema file ${schemaFileName} to ajv`);
     const file = require(`${schemaDir}/${schemaFileName}`);
     ajv.addSchema(file, file.$id);
 
