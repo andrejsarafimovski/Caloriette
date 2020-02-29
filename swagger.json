@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "description": "API for Kube Microservice",
-        "version": "2.0.0",
-        "title": "Microtica Kube Microservice"
+        "description": "API for Caloriette",
+        "version": "1.0.0",
+        "title": "Caloriette"
     },
     "paths": {
         "/users": {
