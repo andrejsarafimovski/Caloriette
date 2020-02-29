@@ -6,6 +6,10 @@
     "description": "Get All Records Request Data",
     "type": "object",
     "properties": {
+        "filter": {
+            "type": "string",
+            "description": "Filter through all records"
+        },
         "limit": {
             "type": "number",
             "minimum": 0

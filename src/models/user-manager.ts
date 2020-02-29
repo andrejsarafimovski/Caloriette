@@ -71,17 +71,25 @@ export class UserManager {
         return user;
     }
 
-    async getAll(limit?: number, skip?: number): Promise<GetAllUsersResponse> {
-        const findOptions: FindManyOptions<User> = {
-            select: ["email", "expectedCaloriesPerDay", "name", "surname"],
-        };
-        if (limit) {
-            findOptions.take = limit;
+    async getAll(limit?: number, skip?: number, filter?: string): Promise<GetAllUsersResponse> {
+        const where: string[] = ["1 = 1"];
+        if (filter) {
+            const parsedFilter = filter
+                .replace(/[oO][rR]/g, "OR") // OR
+                .replace(/[aA][nN][dD]/g, "AND") // AND
+                .replace(/[eE][qQ]/g, "=") // equals
+                .replace(/[nN][eE]/g, "!=") // ne
+                .replace(/[gG][tT]/g, ">") // gt
+                .replace(/[lL][tT]/g, "<"); // lt
+            where.push(parsedFilter);
         }
-        if (skip) {
-            findOptions.skip = skip;
-        }
-        return this.userTable.find(findOptions);
+        return this.userTable
+            .createQueryBuilder("Users")
+            .select(["email", "expectedCaloriesPerDay", "name", "surname"])
+            .where(where.join(" AND "))
+            .take(limit)
+            .skip(skip)
+            .getMany();
     }
 
     async update(email: string, updateData: UpdateUserRequest): Promise<UpdateUserResponse> {

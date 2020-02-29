@@ -33,21 +33,31 @@ export class RecordManager {
         return record;
     }
 
-    async getAll(userEmail?: string, limit?: number, skip?: number): Promise<GetAllRecordsResponse> {
-        const findOptions: FindManyOptions<Record> = {};
-        if (limit) {
-            findOptions.take = limit;
+    async getAll(userEmail?: string, limit?: number, skip?: number, filter?: string): Promise<GetAllRecordsResponse> {
+        const where: string[] = ["1 = 1"];
+        if (this.authUserRole === "admin") {
+            if (userEmail) {
+                where.push(`userEmail = ${userEmail}`);
+            }
+        } else {
+            where.push(`userEmail = ${this.authUserEmail}`);
         }
-        if (skip) {
-            findOptions.skip = skip;
+        if (filter) {
+            const parsedFilter = filter
+                .replace(/[oO][rR]/g, "OR") // OR
+                .replace(/[aA][nN][dD]/g, "AND") // AND
+                .replace(/[eE][qQ]/g, "=") // equals
+                .replace(/[nN][eE]/g, "!=") // ne
+                .replace(/[gG][tT]/g, ">") // gt
+                .replace(/[lL][tT]/g, "<"); // lt
+            where.push(parsedFilter);
         }
-        if (userEmail) {
-            findOptions.where = { userEmail };
-        }
-        if (this.authUserRole !== "admin") {
-            findOptions.where = { userEmail: this.authUserEmail };
-        }
-        return this.recordTable.find(findOptions);
+        return this.recordTable
+            .createQueryBuilder("Records")
+            .where(where.join(" AND "))
+            .take(limit)
+            .skip(skip)
+            .getMany();
     }
 
     async create(createRecord: CreateRecordRequest): Promise<CreateRecordResponse> {

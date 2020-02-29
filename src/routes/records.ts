@@ -31,9 +31,9 @@ app.get(
     authorize(),
     validation("getAllRecordsRequest").middleware,
     errorHandler.wrap(req => {
-        const { limit, skip, userEmail } = req.query;
+        const { limit, skip, userEmail, filter } = req.query;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
-        return new RecordManager(authUserEmail, authUserRole).getAll(userEmail, limit, skip);
+        return new RecordManager(authUserEmail, authUserRole).getAll(userEmail, limit, skip, filter);
     })
 );
 

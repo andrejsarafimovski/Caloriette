@@ -6,6 +6,10 @@
     "description": "Get All Users Request Data",
     "type": "object",
     "properties": {
+        "filter": {
+            "type": "string",
+            "description": "Filter through all users"
+        },
         "limit": {
             "type": "number",
             "minimum": 0

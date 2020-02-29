@@ -27,6 +27,15 @@
                     },
                     {
                         "in": "query",
+                        "name": "filter",
+                        "schema": {
+                            "type": "string",
+                            "description": "Filter through all users"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
                         "name": "limit",
                         "schema": {
                             "type": "number",
@@ -314,6 +323,15 @@
                         "schema": {
                             "type": "number",
                             "minimum": 0
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "filter",
+                        "schema": {
+                            "type": "string",
+                            "description": "Filter through all records"
                         },
                         "required": false
                     },
