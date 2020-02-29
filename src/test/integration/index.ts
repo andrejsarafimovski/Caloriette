@@ -1,15 +1,15 @@
 import { assert } from "chai";
-import { DefaultApi } from "../../sdk/axios";
+import { CalorietteApi } from "../../sdk/axios";
 
 // tslint:disable:no-console
 describe("Integration tests", () => {
 
-    let service: DefaultApi;
+    let service: CalorietteApi;
 
     // service should be initialized before
     before(() => {
         const serverAddress = `http://localhost:${process.env.PORT}`;
-        service = new DefaultApi({}, serverAddress);
+        service = new CalorietteApi({}, serverAddress);
     });
 
     it("Should be able to pass this test", async () => {

@@ -49,7 +49,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             },
             "post": {
                 "summary": "SignUp a User",
@@ -86,7 +89,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             }
         },
         "/users/login": {
@@ -125,7 +131,10 @@
                             }
                         }
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             }
         },
         "/users/{email}": {
@@ -171,7 +180,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             },
             "put": {
                 "summary": "Update a User",
@@ -224,7 +236,10 @@
                             }
                         }
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             },
             "delete": {
                 "summary": "Delete a User",
@@ -268,7 +283,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             }
         },
         "/records": {
@@ -323,7 +341,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             },
             "post": {
                 "summary": "Create a Record",
@@ -360,7 +381,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             }
         },
         "/records/{id}": {
@@ -406,7 +430,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             },
             "delete": {
                 "summary": "Delete a Record",
@@ -450,7 +477,10 @@
                     "default": {
                         "description": "General server error"
                     }
-                }
+                },
+                "tags": [
+                    "caloriette"
+                ]
             }
         }
     },
