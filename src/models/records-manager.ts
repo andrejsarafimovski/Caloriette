@@ -1,10 +1,11 @@
 import HTTP from "http-status-codes";
-import { FindManyOptions, Repository } from "typeorm";
+import { FindManyOptions, getConnection, Repository } from "typeorm";
 import uuid from "uuid";
 
 import { config } from "../config";
 import { Record } from "../entities";
 import { codedError } from "../lib/coded-error";
+import { UserRole } from "../types";
 import { CreateRecordRequest, CreateRecordResponse, DeleteRecordRequest, DeleteRecordResponse, GetAllRecordsResponse, GetAllUsersResponse, GetRecordResponse } from "../types/schema-generated";
 import { UserManager } from "./user-manager";
 
@@ -14,8 +15,12 @@ export class RecordManager {
     private readonly userManager: UserManager;
     private readonly recordTable: Repository<Record>;
 
-    constructor() {
-        this.userManager = new UserManager();
+    constructor(
+        private readonly authUserEmail: string,
+        private readonly authUserRole: UserRole
+    ) {
+        this.recordTable = getConnection().getRepository(Record);
+        this.userManager = new UserManager(authUserEmail, authUserRole);
     }
 
     async get(id: string): Promise<GetRecordResponse> {
@@ -35,10 +40,20 @@ export class RecordManager {
         if (userEmail) {
             findOptions.where = { userEmail };
         }
+        if (this.authUserRole !== "admin") {
+            findOptions.where = { userEmail: this.authUserEmail };
+        }
         return this.recordTable.find(findOptions);
     }
 
     async create(createRecord: CreateRecordRequest): Promise<CreateRecordResponse> {
+        if (
+            this.authUserRole !== "admin" &&
+            createRecord.userEmail !== this.authUserEmail
+        ) {
+            throw codedError(HTTP.FORBIDDEN, "User is not authorized to perform this action");
+        }
+
         const id = uuid.v4();
         const user = await this.userManager.get(createRecord.userEmail);
 

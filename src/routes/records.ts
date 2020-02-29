@@ -2,7 +2,7 @@ import { json as parseJSON } from "body-parser";
 import express from "express";
 
 import * as errorHandler from "../lib/async-response-handler";
-import { authorize } from "../lib/authorization";
+import { authenticate, authorize, extractUserRoleFromAccessToken } from "../lib/jwt-authorization";
 import { validation } from "../lib/validation-schema";
 import { RecordManager } from "../models/records-manager";
 
@@ -18,7 +18,8 @@ app.post(
     validation("createRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { body } = req;
-        return new RecordManager().create(body);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new RecordManager(authUserEmail, authUserRole).create(body);
     })
 );
 
@@ -31,7 +32,8 @@ app.get(
     validation("getAllRecordsRequest").middleware,
     errorHandler.wrap(req => {
         const { page, userEmail } = req.query;
-        return new RecordManager().getAll(userEmail, page);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new RecordManager(authUserEmail, authUserRole).getAll(userEmail, page);
     })
 );
 
@@ -41,10 +43,12 @@ app.get(
 app.get(
     "/:id",
     authorize(),
+    authenticate("id"),
     validation("getRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { id } = req.params;
-        return new RecordManager().get(id);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new RecordManager(authUserEmail, authUserRole).get(id);
     })
 );
 
@@ -54,11 +58,13 @@ app.get(
 app.put(
     "/:id",
     authorize(),
+    authenticate("id"),
     validation("updateRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { id } = req.params;
         const { body } = req.body;
-        return new RecordManager().update(id, body);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new RecordManager(authUserEmail, authUserRole).update(id, body);
     })
 );
 
@@ -68,10 +74,12 @@ app.put(
 app.delete(
     "/:id",
     authorize(),
+    authenticate("id"),
     validation("deleteRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { id } = req.params;
-        return new RecordManager().delete(id);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new RecordManager(authUserEmail, authUserRole).delete(id);
     })
 );
 

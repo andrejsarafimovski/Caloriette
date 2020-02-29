@@ -1,11 +1,12 @@
 import HTTP from "http-status-codes";
-import jwt from "jsonwebtoken";
 import { FindManyOptions, getConnection, Repository } from "typeorm";
 
 import { config } from "../config";
 import { User } from "../entities";
 import { codedError } from "../lib/coded-error";
+import { createAccessToken } from "../lib/jwt-authorization";
 import { hashPassword } from "../lib/password-hash";
+import { UserRole } from "../types";
 import { DeleteUserResponse, GetAllUsersResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
 import { RecordManager } from "./records-manager";
 
@@ -14,42 +15,35 @@ export class UserManager {
     private readonly userTable: Repository<User>;
     private readonly recordManager: RecordManager;
 
-    constructor() {
+    constructor(
+        private readonly authUserEmail: string,
+        private readonly authUserRole: UserRole
+    ) {
         this.userTable = getConnection().getRepository(User);
-        this.recordManager = new RecordManager();
+        this.recordManager = new RecordManager(authUserEmail, authUserRole);
     }
 
-    async login({ email, password }: LoginUserRequest): Promise<LoginUserResponse> {
-        let user: User;
-        try {
-            user = await this.getRaw(email);
-        } catch (err) {
-            if (err.code === HTTP.NOT_FOUND) {
-                throw codedError(HTTP.BAD_REQUEST, "Wrong Credentials");
-            }
-            throw err;
-        }
-        if (user.password !== hashPassword(password)) {
+    static async login({ email, password }: LoginUserRequest): Promise<LoginUserResponse> {
+        const userTable = getConnection().getRepository(User);
+
+        const user = await userTable.findOne(email);
+        if (!user || user.password !== hashPassword(password)) {
             throw codedError(HTTP.BAD_REQUEST, "Wrong Credentials");
         }
-        const accessToken = jwt.sign(
-            { email: user.email, role: user.role },
-            config.jwt.secret,
-            { expiresIn: config.jwt.duration }
-        );
+
+        const accessToken = createAccessToken({ authUserEmail: user.email, authUserRole: user.role });
         return { done: true, accessToken };
     }
 
-    async signup(signupData: SignupUserRequest): Promise<SignupUserResponse> {
-        try {
-            await this.getRaw(signupData.email);
+    static async signup(signupData: SignupUserRequest): Promise<SignupUserResponse> {
+        const userTable = getConnection().getRepository(User);
+
+        const user = await userTable.findOne(signupData.email);
+        if (user) {
             throw codedError(HTTP.BAD_REQUEST, `User with email ${signupData.email} already exists`);
-        } catch (err) {
-            if (err.code !== HTTP.NOT_FOUND) {
-                throw err;
-            }
         }
-        const user: User = {
+
+        const newUser: User = {
             email: signupData.email,
             expectedCaloriesPerDay: signupData.expectedCaloriesPerDay,
             name: signupData.name,
@@ -57,12 +51,12 @@ export class UserManager {
             role: "user",
             surname: signupData.surname,
         };
-        await this.userTable.insert(user);
+        await userTable.insert(newUser);
         return { done: true };
     }
 
     private async getRaw(email: string): Promise<User> {
-        const user = await this.userTable.findOne({ email });
+        const user = await this.userTable.findOne(email);
         if (!user) {
             throw codedError(HTTP.NOT_FOUND, `User ${email} does not exist`);
         }
@@ -107,7 +101,7 @@ export class UserManager {
 
     async delete(email: string): Promise<DeleteUserResponse> {
         await this.getRaw(email);
-        await this.userTable.delete({ email });
+        await this.userTable.delete(email);
         return { done: true };
     }
 }

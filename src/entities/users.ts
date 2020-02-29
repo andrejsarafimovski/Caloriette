@@ -5,6 +5,7 @@ import {
     Entity,
     PrimaryColumn,
 } from "typeorm";
+import { UserRole } from "../types";
 
 // tslint:disable:quotemark
 @Entity()
@@ -44,7 +45,7 @@ export class User {
         type: "varchar",
         length: 100
     })
-    role: string;
+    role: UserRole;
 
     @Column({
         nullable: false,

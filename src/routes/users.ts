@@ -2,7 +2,7 @@ import { json as parseJSON } from "body-parser";
 import express from "express";
 
 import * as errorHandler from "../lib/async-response-handler";
-import { authorize } from "../lib/authorization";
+import { authenticate, authorize, extractUserRoleFromAccessToken } from "../lib/jwt-authorization";
 import { validation } from "../lib/validation-schema";
 import { UserManager } from "../models/user-manager";
 
@@ -17,7 +17,7 @@ app.post(
     validation("signupUserRequest").middleware,
     errorHandler.wrap(req => {
         const { body } = req;
-        return new UserManager().signup(body);
+        return UserManager.signup(body);
     })
 );
 
@@ -30,7 +30,7 @@ app.post(
     validation("loginUserRequest").middleware,
     errorHandler.wrap(req => {
         const { body } = req;
-        return new UserManager().login(body);
+        return UserManager.login(body);
     })
 );
 
@@ -43,7 +43,8 @@ app.get(
     validation("getAllUsersRequest").middleware,
     errorHandler.wrap(req => {
         const { page } = req.query;
-        return new UserManager().getAll(page);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new UserManager(authUserEmail, authUserRole).getAll(page);
     })
 );
 
@@ -53,10 +54,12 @@ app.get(
 app.get(
     "/:email",
     authorize(),
+    authenticate("email"),
     validation("getUserRequest").middleware,
     errorHandler.wrap(req => {
         const { email } = req.params;
-        return new UserManager().get(email);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new UserManager(authUserEmail, authUserRole).get(email);
     })
 );
 
@@ -66,12 +69,14 @@ app.get(
 app.put(
     "/:email",
     authorize(),
+    authenticate("email"),
     parseJSON(),
     validation("updateUserRequest").middleware,
     errorHandler.wrap(req => {
         const { email } = req.params;
         const { body } = req;
-        return new UserManager().update(email, body);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new UserManager(authUserEmail, authUserRole).update(email, body);
     })
 );
 
@@ -81,10 +86,12 @@ app.put(
 app.delete(
     "/:email",
     authorize(),
+    authenticate("email"),
     validation("deleteUserRequest").middleware,
     errorHandler.wrap(req => {
         const { email } = req.params;
-        return new UserManager().delete(email);
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new UserManager(authUserEmail, authUserRole).delete(email);
     })
 );
 
