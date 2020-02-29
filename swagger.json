@@ -52,6 +52,15 @@
             },
             "post": {
                 "summary": "SignUp a User",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignupUserRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "SignUp User Response",
@@ -74,15 +83,6 @@
                     },
                     "default": {
                         "description": "General server error"
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SignupUserRequest"
-                            }
-                        }
                     }
                 }
             }
@@ -266,13 +266,182 @@
             }
         },
         "/records": {
-            "get": {},
-            "post": {}
+            "get": {
+                "summary": "Get All Records",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "type": "number",
+                            "minimum": 1
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "userEmail",
+                        "schema": {
+                            "type": "string",
+                            "description": "Email of the User"
+                        },
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get All Records Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetAllRecordsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a Record",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Create a Record Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateRecordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                }
+            }
         },
         "/records/{id}": {
-            "get": {},
-            "put": {},
-            "delete": {}
+            "get": {
+                "summary": "Get a Record",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "description": "Id of the Record"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a Record Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetRecordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a Record",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "description": "Id of the Record"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete a Record Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeleteRecordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                }
+            }
         }
     },
     "components": {

@@ -1,6 +1,5 @@
 process.env.NODE_ENV = "test";
 process.env.PORT = "8000";
-process.env.PORT = "8000";
 process.env.jwtSecret = "myJWTSecret";
 process.env.hashSecret = "myHashSecret";
 process.env.databaseHost = "localhost";
