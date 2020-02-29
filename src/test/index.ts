@@ -8,6 +8,7 @@ process.env.databaseName = "caloriettedb";
 process.env.databaseUsername = "root";
 process.env.databasePassword = "root12345";
 
+import "./mocks/nutritionx";
 import "./mocks/typeorm";
 // tslint:disable
 import { startServer } from "../";
