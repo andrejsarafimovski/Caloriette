@@ -3,12 +3,13 @@
     "info": {
         "description": "API for Caloriette",
         "version": "1.0.0",
-        "title": "Caloriette"
+        "title": "Caloriette Service"
     },
     "paths": {
         "/users": {
             "get": {
                 "summary": "Get All Users",
+                "operationId": "getUsers",
                 "security": [
                     {
                         "BearerAuth": []
@@ -52,6 +53,7 @@
             },
             "post": {
                 "summary": "SignUp a User",
+                "operationId": "signupUser",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -90,6 +92,7 @@
         "/users/login": {
             "post": {
                 "summary": "Login a User",
+                "operationId": "loginUser",
                 "responses": {
                     "200": {
                         "description": "Login a User Response",
@@ -128,6 +131,7 @@
         "/users/{email}": {
             "get": {
                 "summary": "Get a User",
+                "operationId": "getUser",
                 "security": [
                     {
                         "BearerAuth": []
@@ -171,6 +175,7 @@
             },
             "put": {
                 "summary": "Update a User",
+                "operationId": "updateUser",
                 "security": [
                     {
                         "BearerAuth": []
@@ -223,6 +228,7 @@
             },
             "delete": {
                 "summary": "Delete a User",
+                "operationId": "deleteUser",
                 "security": [
                     {
                         "BearerAuth": []
@@ -268,6 +274,7 @@
         "/records": {
             "get": {
                 "summary": "Get All Records",
+                "operationId": "getRecords",
                 "security": [
                     {
                         "BearerAuth": []
@@ -320,6 +327,7 @@
             },
             "post": {
                 "summary": "Create a Record",
+                "operationId": "createRecord",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -358,6 +366,7 @@
         "/records/{id}": {
             "get": {
                 "summary": "Get a Record",
+                "operationId": "getRecord",
                 "security": [
                     {
                         "BearerAuth": []
@@ -401,6 +410,7 @@
             },
             "delete": {
                 "summary": "Delete a Record",
+                "operationId": "deleteRecord",
                 "security": [
                     {
                         "BearerAuth": []
