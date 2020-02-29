@@ -6,13 +6,12 @@ import { NutritionX } from "../actions/nutritionx";
 import { Record } from "../entities";
 import { codedError } from "../lib/coded-error";
 import { UserRole } from "../types";
-import { CreateRecordRequest, CreateRecordResponse, DeleteRecordRequest, DeleteRecordResponse, GetAllRecordsResponse, GetAllUsersResponse, GetRecordResponse } from "../types/schema-generated";
+import { CreateRecordRequest, CreateRecordResponse, DeleteRecordResponse, GetAllRecordsResponse, GetAllUsersResponse, GetRecordResponse, UpdateRecordRequest, UpdateRecordResponse } from "../types/schema-generated";
 import { UserManager } from "./user-manager";
 
 
 export class RecordManager {
 
-    private readonly userManager: UserManager;
     private readonly recordTable: Repository<Record>;
     private readonly nutritionX: NutritionX;
 
@@ -21,7 +20,6 @@ export class RecordManager {
         private readonly authUserRole: UserRole
     ) {
         this.recordTable = getConnection().getRepository(Record);
-        this.userManager = new UserManager(authUserEmail, authUserRole);
         this.nutritionX = new NutritionX();
     }
 
@@ -69,12 +67,12 @@ export class RecordManager {
         }
 
         const id = uuid.v4();
-        const user = await this.userManager.get(createRecord.userEmail);
-
+        const user = await new UserManager(this.authUserEmail, this.authUserRole).get(createRecord.userEmail);
+        const caloriesForTheDate = await this.getUserCaloriesForTheDate(createRecord.userEmail, createRecord.date);
         const record: Record = {
             date: createRecord.date,
             id,
-            lessThanExpectedCalories: user.expectedCaloriesPerDay > await this.getUserCaloriesForTheDay(createRecord.userEmail), // tbd
+            lessThanExpectedCalories: user.expectedCaloriesPerDay > caloriesForTheDate,
             numberOfCalories: createRecord.numberOfCalories || await this.nutritionX.getCalories(createRecord.text),
             text: createRecord.text,
             time: createRecord.time,
@@ -85,6 +83,22 @@ export class RecordManager {
             done: true,
             id
         };
+    }
+
+    async update(updateBody: UpdateRecordRequest): Promise<UpdateRecordResponse> {
+        const record = await this.get(updateBody.id);
+        const toUpdate: Partial<Record> = {
+            date: updateBody.date || record.date,
+            time: updateBody.time || record.time
+        };
+        // const user = await new UserManager(this.authUserEmail, this.authUserRole).get(record.userEmail);
+        if (updateBody.text) {
+            toUpdate.text = updateBody.text;
+            toUpdate.numberOfCalories = updateBody.numberOfCalories || await this.nutritionX.getCalories(updateBody.text);
+        }
+        await this.recordTable.update(record.id, toUpdate);
+        // await this.updateRecordsCaloriesForUser(record.userEmail, user.expectedCaloriesPerDay);
+        return { done: true };
     }
 
     async delete(id: string): Promise<DeleteRecordResponse> {
@@ -120,8 +134,8 @@ export class RecordManager {
         );
     }
 
-    private async getUserCaloriesForTheDay(userEmail: string): Promise<number> {
-        const todayRecords = await this.recordTable.find({ userEmail });
+    private async getUserCaloriesForTheDate(userEmail: string, date: string): Promise<number> {
+        const todayRecords = await this.recordTable.find({ userEmail, date });
         return todayRecords.reduce((total, record) => total + record.numberOfCalories, 0);
     }
 }

@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "schema://updateRecordRequest.json",
+    "title": "updateRecordRequest",
+    "operationId": "updateRecordRequest",
+    "description": "Update Record Request",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "Id of the Record",
+            "format": "uuid"
+        },
+        "date": {
+            "type": "string",
+            "description": "Date of the Record",
+            "examples": [
+                "2010-12-20"
+            ],
+            "minLength": 10,
+            "maxLength": 10
+        },
+        "time": {
+            "type": "string",
+            "description": "Time of the Record",
+            "examples": [
+                "10:35:10"
+            ],
+            "minLength": 8,
+            "maxLength": 8
+        },
+        "text": {
+            "type": "string"
+        },
+        "numberOfCalories": {
+            "type": "number",
+            "description": "Number of calories for the whole record"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "id"
+    ]
+}

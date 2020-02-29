@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "schema://updateRecordResponse.json",
+    "title": "updateRecordResponse",
+    "operationId": "updateRecordResponse",
+    "description": "Update Record Response Data",
+    "type": "object",
+    "properties": {
+        "done": {
+            "type": "boolean"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "done"
+    ]
+}

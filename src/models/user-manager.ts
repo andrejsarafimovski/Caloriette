@@ -16,8 +16,8 @@ export class UserManager {
     private readonly recordManager: RecordManager;
 
     constructor(
-        private readonly authUserEmail: string,
-        private readonly authUserRole: UserRole
+        authUserEmail: string,
+        authUserRole: UserRole
     ) {
         this.userTable = getConnection().getRepository(User);
         this.recordManager = new RecordManager(authUserEmail, authUserRole);
@@ -92,8 +92,8 @@ export class UserManager {
             .getMany();
     }
 
-    async update(email: string, updateData: UpdateUserRequest): Promise<UpdateUserResponse> {
-        const user = await this.getRaw(email);
+    async update(updateData: UpdateUserRequest): Promise<UpdateUserResponse> {
+        const user = await this.getRaw(updateData.email);
         const updateUser: Partial<User> = {
             expectedCaloriesPerDay: updateData.expectedCaloriesPerDay || user.expectedCaloriesPerDay,
             name: updateData.name || user.name,
@@ -102,7 +102,7 @@ export class UserManager {
                 user.password,
             surname: updateData.surname || user.surname
         };
-        await this.userTable.update({ email }, updateUser);
+        await this.userTable.update({ email: updateData.email }, updateUser);
         if (updateData.expectedCaloriesPerDay) {
             await this.recordManager.updateRecordsCaloriesForUser(user.email, updateData.expectedCaloriesPerDay);
         }

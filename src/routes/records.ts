@@ -64,7 +64,7 @@ app.put(
         const { id } = req.params;
         const { body } = req.body;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
-        return new RecordManager(authUserEmail, authUserRole).update(id, body);
+        return new RecordManager(authUserEmail, authUserRole).update({ ...body, id });
     })
 );
 

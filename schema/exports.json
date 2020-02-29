@@ -60,6 +60,12 @@
         },
         "updateUserResponse": {
             "$ref": "./updateUserResponse.json"
+        },
+        "updateRecordRequest": {
+            "$ref": "./updateRecordRequest.json"
+        },
+        "updateRecordResponse": {
+            "$ref": "./updateRecordResponse.json"
         }
     },
     "additionalProperties": false

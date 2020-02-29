@@ -471,6 +471,57 @@
                     "caloriette"
                 ]
             },
+            "put": {
+                "summary": "Update a Record",
+                "operationId": "updateRecord",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "description": "Id of the Record"
+                        },
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Create a Record Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateRecordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad input"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "default": {
+                        "description": "General server error"
+                    }
+                },
+                "tags": [
+                    "caloriette"
+                ]
+            },
             "delete": {
                 "summary": "Delete a Record",
                 "operationId": "deleteRecord",
@@ -579,6 +630,49 @@
                 "required": [
                     "done",
                     "id"
+                ]
+            },
+            "UpdateRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Id of the Record",
+                        "format": "uuid"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Date of the Record",
+                        "minLength": 10,
+                        "maxLength": 10
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time of the Record",
+                        "minLength": 8,
+                        "maxLength": 8
+                    },
+                    "text": {
+                        "type": "string"
+                    },
+                    "numberOfCalories": {
+                        "type": "number",
+                        "description": "Number of calories for the whole record"
+                    }
+                },
+                "required": [
+                    "id"
+                ]
+            },
+            "UpdateRecordResponse": {
+                "type": "object",
+                "properties": {
+                    "done": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "done"
                 ]
             },
             "DeleteRecordRequest": {

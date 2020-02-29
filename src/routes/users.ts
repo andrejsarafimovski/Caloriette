@@ -76,7 +76,7 @@ app.put(
         const { email } = req.params;
         const { body } = req;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
-        return new UserManager(authUserEmail, authUserRole).update(email, body);
+        return new UserManager(authUserEmail, authUserRole).update({ ...body, email });
     })
 );
 
