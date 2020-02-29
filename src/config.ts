@@ -16,10 +16,14 @@ const {
     databaseName,
     databaseUsername,
     databasePassword,
+    nutritionxAppId,
+    nutritionxAppKey
 } = process.env;
 
 /* istanbul ignore if */ // won't test the throw
 if (
+    !nutritionxAppId ||
+    !nutritionxAppKey ||
     !databaseHost ||
     !databasePort ||
     !databaseName ||
@@ -39,6 +43,10 @@ export const config = {
     jwt: {
         secret: jwtSecret,
         duration: 3600
+    },
+    nutritionx: {
+        appId: nutritionxAppId,
+        appKey: nutritionxAppKey
     },
     database: {
         host: databaseHost,

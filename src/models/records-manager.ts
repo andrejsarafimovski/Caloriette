@@ -2,7 +2,7 @@ import HTTP from "http-status-codes";
 import { FindManyOptions, getConnection, Repository } from "typeorm";
 import uuid from "uuid";
 
-import { config } from "../config";
+import { NutritionX } from "../actions/nutritionx";
 import { Record } from "../entities";
 import { codedError } from "../lib/coded-error";
 import { UserRole } from "../types";
@@ -14,6 +14,7 @@ export class RecordManager {
 
     private readonly userManager: UserManager;
     private readonly recordTable: Repository<Record>;
+    private readonly nutritionX: NutritionX;
 
     constructor(
         private readonly authUserEmail: string,
@@ -21,6 +22,7 @@ export class RecordManager {
     ) {
         this.recordTable = getConnection().getRepository(Record);
         this.userManager = new UserManager(authUserEmail, authUserRole);
+        this.nutritionX = new NutritionX();
     }
 
     async get(id: string): Promise<GetRecordResponse> {
@@ -63,7 +65,7 @@ export class RecordManager {
             date: createRecord.date,
             id,
             lessThanExpectedCalories: user.expectedCaloriesPerDay > await this.getUserCaloriesForTheDay(createRecord.userEmail), // tbd
-            numberOfCalories: createRecord.numberOfCalories || await this.getCalories(createRecord.text), // tbd
+            numberOfCalories: createRecord.numberOfCalories || await this.nutritionX.getCalories(createRecord.text),
             text: createRecord.text,
             time: createRecord.time,
             userEmail: createRecord.userEmail
@@ -106,10 +108,6 @@ export class RecordManager {
         await Promise.all(
             updatedUserRecords.map(uur => this.recordTable.update(uur.id, uur))
         );
-    }
-
-    private async getCalories(text: string) { // TODO
-        return 0;
     }
 
     private async getUserCaloriesForTheDay(userEmail: string): Promise<number> {
