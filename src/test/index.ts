@@ -7,6 +7,8 @@ process.env.databasePort = "3306";
 process.env.databaseName = "caloriettedb";
 process.env.databaseUsername = "root";
 process.env.databasePassword = "root12345";
+process.env.nutritionxAppId = "nxTestAppId";
+process.env.nutritionxAppKey = "nxTestAppKey";
 
 import "./mocks/nutritionx";
 import "./mocks/typeorm";

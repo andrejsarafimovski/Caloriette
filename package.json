@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc --p .",
-    "prebuild": "rm -rf ./dst && npm run generate-code",
+    "prebuild": "rm -rf ./dst && npm run generate-code && npm run generate-sdk",
     "prestart": "npm run build",
     "start": "node dst/index.js",
     "postbuild": "npm run lint",

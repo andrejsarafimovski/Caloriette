@@ -8,3 +8,4 @@ dst
 package-lock.json
 src/types/schema-generated
 src/sdk/**
+caloriettedb
