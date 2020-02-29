@@ -71,13 +71,15 @@ export class UserManager {
         return user;
     }
 
-    async getAll(page?: number): Promise<GetAllUsersResponse> {
+    async getAll(limit?: number, skip?: number): Promise<GetAllUsersResponse> {
         const findOptions: FindManyOptions<User> = {
             select: ["email", "expectedCaloriesPerDay", "name", "surname"],
         };
-        if (page) {
-            findOptions.take = config.pagination.resultsPerPage;
-            findOptions.skip = (page - 1) * config.pagination.resultsPerPage;
+        if (limit) {
+            findOptions.take = limit;
+        }
+        if (skip) {
+            findOptions.skip = skip;
         }
         return this.userTable.find(findOptions);
     }

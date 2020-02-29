@@ -42,9 +42,9 @@ app.get(
     authorize(),
     validation("getAllUsersRequest").middleware,
     errorHandler.wrap(req => {
-        const { page } = req.query;
+        const { limit, skip } = req.query;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
-        return new UserManager(authUserEmail, authUserRole).getAll(page);
+        return new UserManager(authUserEmail, authUserRole).getAll(limit, skip);
     })
 );
 

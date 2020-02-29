@@ -31,11 +31,13 @@ export class RecordManager {
         return record;
     }
 
-    async getAll(userEmail?: string, page?: number): Promise<GetAllRecordsResponse> {
+    async getAll(userEmail?: string, limit?: number, skip?: number): Promise<GetAllRecordsResponse> {
         const findOptions: FindManyOptions<Record> = {};
-        if (page) {
-            findOptions.take = config.pagination.resultsPerPage;
-            findOptions.skip = (page - 1) * config.pagination.resultsPerPage;
+        if (limit) {
+            findOptions.take = limit;
+        }
+        if (skip) {
+            findOptions.skip = skip;
         }
         if (userEmail) {
             findOptions.where = { userEmail };

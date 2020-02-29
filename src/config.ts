@@ -36,9 +36,6 @@ export const config = {
     hash: {
         secret: hashSecret
     },
-    pagination: {
-        resultsPerPage: 10
-    },
     jwt: {
         secret: jwtSecret,
         duration: 3600

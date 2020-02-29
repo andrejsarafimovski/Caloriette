@@ -6,9 +6,13 @@
     "description": "Get All Records Request Data",
     "type": "object",
     "properties": {
-        "page": {
+        "limit": {
             "type": "number",
-            "minimum": 1
+            "minimum": 0
+        },
+        "skip": {
+            "type": "number",
+            "minimum": 0
         },
         "userEmail": {
             "type": "string",

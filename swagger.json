@@ -18,10 +18,19 @@
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "page",
+                        "name": "size",
                         "schema": {
                             "type": "number",
-                            "minimum": 1
+                            "minimum": 0
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "number",
+                            "minimum": 0
                         },
                         "required": false
                     }
@@ -301,10 +310,19 @@
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "page",
+                        "name": "limit",
                         "schema": {
                             "type": "number",
-                            "minimum": 1
+                            "minimum": 0
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "skip",
+                        "schema": {
+                            "type": "number",
+                            "minimum": 0
                         },
                         "required": false
                     },
@@ -595,9 +613,13 @@
             "GetAllRecordsRequest": {
                 "type": "object",
                 "properties": {
-                    "page": {
+                    "limit": {
                         "type": "number",
-                        "minimum": 1
+                        "minimum": 0
+                    },
+                    "skip": {
+                        "type": "number",
+                        "minimum": 0
                     },
                     "userEmail": {
                         "type": "string",
@@ -662,9 +684,13 @@
             "GetAllUsersRequest": {
                 "type": "object",
                 "properties": {
-                    "page": {
+                    "limit": {
                         "type": "number",
-                        "minimum": 1
+                        "minimum": 0
+                    },
+                    "skip": {
+                        "type": "number",
+                        "minimum": 0
                     }
                 }
             },
