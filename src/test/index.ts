@@ -23,5 +23,5 @@ before(async () => {
 
 after(() => {
     console.info("AFTER");
-    process.exit(1);
+    process.exit(0);
 });

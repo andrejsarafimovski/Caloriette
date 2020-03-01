@@ -1,7 +1,9 @@
 import { assert } from "chai";
+import HTTP from "http-status-codes";
 import { CalorietteApi } from "../../sdk/axios";
+import { errorTest } from "../lib/error-test";
 
-// tslint:disable:no-console
+// tslint:disable
 describe("Integration tests", () => {
 
     let service: CalorietteApi;
@@ -24,6 +26,22 @@ describe("Integration tests", () => {
         const signupUserResponse = await service.signupUser(user);
         assert.exists(signupUserResponse.data);
         assert.isTrue(signupUserResponse.data.done);
+        await errorTest(
+            service.signupUser(user),
+            HTTP.BAD_REQUEST,
+            "Should not be able to sign up a user with the same email address"
+        );
+
+        await errorTest(
+            service.signupUser({
+                expectedCaloriesPerDay: 1230,
+                name: "Pero",
+                password: "Pero1230",
+                surname: "PeroSoBaliracata"
+            } as any),
+            HTTP.BAD_REQUEST,
+            "Should not be able to sign up a user with no email address"
+        );
     });
 
     it("Should be able to login a user", async () => {
@@ -32,6 +50,21 @@ describe("Integration tests", () => {
         assert.exists(loginUserResponse.data.accessToken);
         assert.isTrue(loginUserResponse.data.done);
         service = new CalorietteApi({ accessToken: loginUserResponse.data.accessToken }, serverAddress);
+        await errorTest(
+            service.loginUser({ email: "dummyEmail", password: user.password }),
+            HTTP.BAD_REQUEST,
+            "Should not be able to login a user with the wrong email address"
+        );
+        await errorTest(
+            service.loginUser({ email: user.email, password: "dummyPassword" }),
+            HTTP.BAD_REQUEST,
+            "Should not be able to login a user with the wrong password"
+        );
+        await errorTest(
+            service.loginUser({ email: "dummyEmail", password: "dummyPassword" }),
+            HTTP.BAD_REQUEST,
+            "Should not be able to login a user with the wrong email and password"
+        );
     });
 
     it("Should be able to get all users data", async () => {

@@ -22,7 +22,7 @@ export class NutritionX {
                 query: text
             })
         });
-        if (response.status !== HTTP.OK) {
+        if (response.status !== HTTP.OK) /* istanbul ignore next */ { // edge case
             const jsonErrorData: { message: string } = await response.json();
             throw codedError(response.status, jsonErrorData.message);
         }

@@ -14,7 +14,7 @@ const app = express();
 app.post(
     "/",
     parseJSON(),
-    validation("signupUserRequest").middleware,
+    validation("signupUserRequest"),
     errorHandler.wrap(req => {
         const { body } = req;
         return UserManager.signup(body);
@@ -27,7 +27,7 @@ app.post(
 app.post(
     "/login",
     parseJSON(),
-    validation("loginUserRequest").middleware,
+    validation("loginUserRequest"),
     errorHandler.wrap(req => {
         const { body } = req;
         return UserManager.login(body);
@@ -40,7 +40,7 @@ app.post(
 app.get(
     "/",
     authorize(),
-    validation("getAllUsersRequest").middleware,
+    validation("getAllUsersRequest"),
     errorHandler.wrap(req => {
         const { limit, skip, filter } = req.query;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
@@ -55,7 +55,7 @@ app.get(
     "/:email",
     authorize(),
     authenticate("email"),
-    validation("getUserRequest").middleware,
+    validation("getUserRequest"),
     errorHandler.wrap(req => {
         const { email } = req.params;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
@@ -71,7 +71,7 @@ app.put(
     authorize(),
     authenticate("email"),
     parseJSON(),
-    validation("updateUserRequest").middleware,
+    validation("updateUserRequest"),
     errorHandler.wrap(req => {
         const { email } = req.params;
         const { body } = req;
@@ -87,7 +87,7 @@ app.delete(
     "/:email",
     authorize(),
     authenticate("email"),
-    validation("deleteUserRequest").middleware,
+    validation("deleteUserRequest"),
     errorHandler.wrap(req => {
         const { email } = req.params;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);

@@ -21,7 +21,7 @@ function validate(schemaId: string, target: unknown, def = false) {
 
     const validator = schema.getSchema(fullSchemaURI);
 
-    if (!validator) {
+    if (!validator) /* istanbul ignore next */ { // edge case
         console.error(`Unable to find the provided "${schemaId}" schema`);
         throw codedError(HTTP.INTERNAL_SERVER_ERROR, "Unable to validate input");
     }
@@ -48,20 +48,13 @@ function validate(schemaId: string, target: unknown, def = false) {
  * and a middleware function which should be used before your request handlers
  */
 export function validation(schemaId: string) {
-    return {
-        wrap: <T = Request>(handler: (req: T, res: Response) => Promise<unknown>) => (req: any, res: Response) => {
-            const payload: {} = { ...req.body, ...req.query, ...req.params };
+    return (req: Request, res: Response, next: NextFunction) => {
+        const payload: {} = { ...req.body, ...req.query, ...req.params };
+        try {
             validate(schemaId, payload);
-            return handler(req, res);
-        },
-        middleware: (req: Request, res: Response, next: NextFunction) => {
-            const payload: {} = { ...req.body, ...req.query, ...req.params };
-            try {
-                validate(schemaId, payload);
-            } catch (err) /* istanbul ignore next */ {
-                return res.status(err.code || HTTP.INTERNAL_SERVER_ERROR).send(err);
-            }
-            return next();
+        } catch (err) /* istanbul ignore next */ {
+            return res.status(err.code || HTTP.INTERNAL_SERVER_ERROR).send(err);
         }
+        return next();
     };
 }

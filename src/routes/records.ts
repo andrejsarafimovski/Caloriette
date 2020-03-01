@@ -15,7 +15,7 @@ app.post(
     "/",
     authorize(),
     parseJSON(),
-    validation("createRecordRequest").middleware,
+    validation("createRecordRequest"),
     errorHandler.wrap(req => {
         const { body } = req;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
@@ -29,7 +29,7 @@ app.post(
 app.get(
     "/",
     authorize(),
-    validation("getAllRecordsRequest").middleware,
+    validation("getAllRecordsRequest"),
     errorHandler.wrap(req => {
         const { limit, skip, userEmail, filter } = req.query;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
@@ -44,7 +44,7 @@ app.get(
     "/:id",
     authorize(),
     authenticate("id"),
-    validation("getRecordRequest").middleware,
+    validation("getRecordRequest"),
     errorHandler.wrap(req => {
         const { id } = req.params;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
@@ -60,7 +60,7 @@ app.put(
     authorize(),
     authenticate("id"),
     parseJSON(),
-    validation("updateRecordRequest").middleware,
+    validation("updateRecordRequest"),
     errorHandler.wrap(req => {
         const { id } = req.params;
         const { body } = req;
@@ -76,7 +76,7 @@ app.delete(
     "/:id",
     authorize(),
     authenticate("id"),
-    validation("deleteRecordRequest").middleware,
+    validation("deleteRecordRequest"),
     errorHandler.wrap(req => {
         const { id } = req.params;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);

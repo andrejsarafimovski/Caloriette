@@ -39,6 +39,7 @@ export class UserManager {
         const userTable = getConnection().getRepository(User);
 
         const user = await userTable.findOne(signupData.email);
+
         if (user) {
             throw codedError(HTTP.BAD_REQUEST, `User with email ${signupData.email} already exists`);
         }

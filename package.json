@@ -21,17 +21,17 @@
   },
   "nyc": {
     "check-coverage": true,
-    "lines": 50,
-    "statements": 50,
-    "functions": 40,
+    "lines": 90,
+    "statements": 90,
+    "functions": 90,
     "exclude": [
       "**/test",
       "**/sdk"
     ],
     "watermarks": {
       "branches": [
-        10,
-        50
+        50,
+        100
       ],
       "lines": [
         90,
