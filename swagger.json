@@ -250,7 +250,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UpdateUserResponse"
+                                "$ref": "#/components/schemas/UpdateUserRequest"
                             }
                         }
                     }
@@ -385,6 +385,11 @@
             "post": {
                 "summary": "Create a Record",
                 "operationId": "createRecord",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -474,6 +479,11 @@
             "put": {
                 "summary": "Update a Record",
                 "operationId": "updateRecord",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "parameters": [
                     {
                         "in": "path",
@@ -635,11 +645,6 @@
             "UpdateRecordRequest": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "description": "Id of the Record",
-                        "format": "uuid"
-                    },
                     "date": {
                         "type": "string",
                         "description": "Date of the Record",
@@ -659,10 +664,7 @@
                         "type": "number",
                         "description": "Number of calories for the whole record"
                     }
-                },
-                "required": [
-                    "id"
-                ]
+                }
             },
             "UpdateRecordResponse": {
                 "type": "object",
@@ -675,19 +677,6 @@
                     "done"
                 ]
             },
-            "DeleteRecordRequest": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "description": "Id of the Record",
-                        "format": "uuid"
-                    }
-                },
-                "required": [
-                    "id"
-                ]
-            },
             "DeleteRecordResponse": {
                 "type": "object",
                 "properties": {
@@ -697,18 +686,6 @@
                 },
                 "required": [
                     "done"
-                ]
-            },
-            "DeleteUserRequest": {
-                "type": "object",
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "description": "Name of the User"
-                    }
-                },
-                "required": [
-                    "email"
                 ]
             },
             "DeleteUserResponse": {
@@ -743,55 +720,63 @@
                 }
             },
             "GetAllRecordsResponse": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string",
-                            "description": "Id of the Record",
-                            "format": "uuid"
-                        },
-                        "userEmail": {
-                            "type": "string",
-                            "description": "Email of the User",
-                            "maxLength": 100,
-                            "minLength": 0,
-                            "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
-                        },
-                        "date": {
-                            "type": "string",
-                            "description": "Date of the Record",
-                            "minLength": 10,
-                            "maxLength": 10
-                        },
-                        "time": {
-                            "type": "string",
-                            "description": "Time of the Record",
-                            "minLength": 8,
-                            "maxLength": 8
-                        },
-                        "text": {
-                            "type": "string"
-                        },
-                        "numberOfCalories": {
-                            "type": "number",
-                            "description": "Number of calories for the whole record"
-                        },
-                        "lessThanExpectedCalories": {
-                            "type": "boolean"
+                "type": "object",
+                "properties": {
+                    "records": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "description": "Id of the Record",
+                                    "format": "uuid"
+                                },
+                                "userEmail": {
+                                    "type": "string",
+                                    "description": "Email of the User",
+                                    "maxLength": 100,
+                                    "minLength": 0,
+                                    "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                                },
+                                "date": {
+                                    "type": "string",
+                                    "description": "Date of the Record",
+                                    "minLength": 10,
+                                    "maxLength": 10
+                                },
+                                "time": {
+                                    "type": "string",
+                                    "description": "Time of the Record",
+                                    "minLength": 8,
+                                    "maxLength": 8
+                                },
+                                "text": {
+                                    "type": "string"
+                                },
+                                "numberOfCalories": {
+                                    "type": "number",
+                                    "description": "Number of calories for the whole record"
+                                },
+                                "lessThanExpectedCalories": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "userEmail",
+                                "date",
+                                "time",
+                                "text",
+                                "numberOfCalories",
+                                "lessThanExpectedCalories"
+                            ]
                         }
-                    },
-                    "required": [
-                        "id",
-                        "userEmail",
-                        "date",
-                        "time",
-                        "text",
-                        "numberOfCalories",
-                        "lessThanExpectedCalories"
-                    ]
-                }
+                    }
+                },
+                "required": [
+                    "records"
+                ]
             },
             "GetAllUsersRequest": {
                 "type": "object",
@@ -807,52 +792,48 @@
                 }
             },
             "GetAllUsersResponse": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "email": {
-                            "type": "string",
-                            "description": "Email of the User",
-                            "maxLength": 100,
-                            "minLength": 0,
-                            "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
-                        },
-                        "name": {
-                            "type": "string",
-                            "description": "Name of the User",
-                            "minLength": 3,
-                            "maxLength": 30
-                        },
-                        "surname": {
-                            "type": "string",
-                            "description": "Surname of the User",
-                            "minLength": 3,
-                            "maxLength": 100
-                        },
-                        "expectedCaloriesPerDay": {
-                            "type": "number",
-                            "description": "Expected daily intake of calories per day for the User"
-                        }
-                    },
-                    "required": [
-                        "email",
-                        "surname",
-                        "expectedCaloriesPerDay",
-                        "name"
-                    ]
-                }
-            },
-            "GetRecordRequest": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "description": "Id of the Record"
+                    "users": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "description": "Email of the User",
+                                    "maxLength": 100,
+                                    "minLength": 0,
+                                    "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the User",
+                                    "minLength": 3,
+                                    "maxLength": 30
+                                },
+                                "surname": {
+                                    "type": "string",
+                                    "description": "Surname of the User",
+                                    "minLength": 3,
+                                    "maxLength": 100
+                                },
+                                "expectedCaloriesPerDay": {
+                                    "type": "number",
+                                    "description": "Expected daily intake of calories per day for the User"
+                                }
+                            },
+                            "required": [
+                                "email",
+                                "surname",
+                                "expectedCaloriesPerDay",
+                                "name"
+                            ]
+                        }
                     }
                 },
                 "required": [
-                    "id"
+                    "users"
                 ]
             },
             "GetRecordResponse": {
@@ -901,18 +882,6 @@
                     "text",
                     "numberOfCalories",
                     "lessThanExpectedCalories"
-                ]
-            },
-            "GetUserRequest": {
-                "type": "object",
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "description": "Name of the User"
-                    }
-                },
-                "required": [
-                    "email"
                 ]
             },
             "GetUserResponse": {
@@ -1035,13 +1004,6 @@
             "UpdateUserRequest": {
                 "type": "object",
                 "properties": {
-                    "email": {
-                        "type": "string",
-                        "description": "Email of the User",
-                        "maxLength": 100,
-                        "minLength": 0,
-                        "pattern": "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
-                    },
                     "name": {
                         "type": "string",
                         "description": "Name of the User",
@@ -1062,10 +1024,7 @@
                         "type": "string",
                         "description": "password for loging into the application"
                     }
-                },
-                "required": [
-                    "email"
-                ]
+                }
             },
             "UpdateUserResponse": {
                 "type": "object",

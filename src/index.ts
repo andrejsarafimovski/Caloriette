@@ -35,7 +35,7 @@ morgan("dev");
 export async function startServer() {
     await createConnection({
         name: "default",
-        type: "mysql",
+        type: config.database.type as any,
         database: config.database.name,
         username: config.database.username,
         password: config.database.password,

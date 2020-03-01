@@ -1,3 +1,4 @@
+import HTTP from "http-status-codes";
 import mockRequire from "mock-require";
 import * as nf from "node-fetch";
 
@@ -21,6 +22,7 @@ async function requestMock(urlObject: nf.RequestInfo, options: nf.RequestInit) {
         ]
     };
     return Promise.resolve({
+        status: HTTP.OK,
         json: () => {
             return Promise.resolve(response);
         }

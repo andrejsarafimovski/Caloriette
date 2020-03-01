@@ -1,5 +1,5 @@
 import HTTP from "http-status-codes";
-import { FindManyOptions, getConnection, Repository } from "typeorm";
+import { getConnection, Repository } from "typeorm";
 import uuid from "uuid";
 
 import { NutritionX } from "../actions/nutritionx";
@@ -35,10 +35,10 @@ export class RecordManager {
         const where: string[] = ["1 = 1"];
         if (this.authUserRole === "admin") {
             if (userEmail) {
-                where.push(`userEmail = ${userEmail}`);
+                where.push(`userEmail = "${userEmail}"`);
             }
         } else {
-            where.push(`userEmail = ${this.authUserEmail}`);
+            where.push(`userEmail = "${this.authUserEmail}"`);
         }
         if (filter) {
             const parsedFilter = filter
@@ -50,12 +50,13 @@ export class RecordManager {
                 .replace(/[lL][tT]/g, "<"); // lt
             where.push(parsedFilter);
         }
-        return this.recordTable
-            .createQueryBuilder("Records")
+        const records = await this.recordTable
+            .createQueryBuilder("record")
             .where(where.join(" AND "))
             .take(limit)
             .skip(skip)
             .getMany();
+        return { records };
     }
 
     async create(createRecord: CreateRecordRequest): Promise<CreateRecordResponse> {
@@ -89,15 +90,19 @@ export class RecordManager {
         const record = await this.get(updateBody.id);
         const toUpdate: Partial<Record> = {
             date: updateBody.date || record.date,
-            time: updateBody.time || record.time
+            time: updateBody.time || record.time,
+            numberOfCalories: updateBody.numberOfCalories || record.numberOfCalories
         };
-        // const user = await new UserManager(this.authUserEmail, this.authUserRole).get(record.userEmail);
+
         if (updateBody.text) {
             toUpdate.text = updateBody.text;
             toUpdate.numberOfCalories = updateBody.numberOfCalories || await this.nutritionX.getCalories(updateBody.text);
         }
         await this.recordTable.update(record.id, toUpdate);
+
+        // const user = await new UserManager(this.authUserEmail, this.authUserRole).get(record.userEmail);
         // await this.updateRecordsCaloriesForUser(record.userEmail, user.expectedCaloriesPerDay);
+
         return { done: true };
     }
 
@@ -108,7 +113,7 @@ export class RecordManager {
     }
 
     async updateRecordsCaloriesForUser(userEmail: string, expectedCaloriesPerDay: number) {
-        const userRecords = await this.getAll(userEmail);
+        const { records: userRecords } = await this.getAll(userEmail);
         const userRecordsByDate = userRecords.reduce((acc, ur) => {
             if (!acc[ur.date]) {
                 acc[ur.date] = [];

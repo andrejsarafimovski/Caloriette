@@ -21,9 +21,8 @@ export class Record {
     })
     id: string;
 
-    @PrimaryColumn()
+    @Column()
     @ManyToOne(type => User, { cascade: true, nullable: false })
-    @JoinColumn()
     userEmail: string;
 
     @Column({

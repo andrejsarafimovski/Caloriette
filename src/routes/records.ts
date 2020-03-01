@@ -59,10 +59,11 @@ app.put(
     "/:id",
     authorize(),
     authenticate("id"),
+    parseJSON(),
     validation("updateRecordRequest").middleware,
     errorHandler.wrap(req => {
         const { id } = req.params;
-        const { body } = req.body;
+        const { body } = req;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
         return new RecordManager(authUserEmail, authUserRole).update({ ...body, id });
     })

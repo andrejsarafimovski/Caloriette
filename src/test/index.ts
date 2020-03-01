@@ -2,16 +2,17 @@ process.env.NODE_ENV = "test";
 process.env.PORT = "8000";
 process.env.jwtSecret = "myJWTSecret";
 process.env.hashSecret = "myHashSecret";
+process.env.databaseType = "sqlite";
 process.env.databaseHost = "localhost";
 process.env.databasePort = "3306";
-process.env.databaseName = "caloriettedb";
-process.env.databaseUsername = "root";
-process.env.databasePassword = "root12345";
+process.env.databaseName = ":memory:";
+process.env.databaseUsername = "dbuser";
+process.env.databasePassword = "dbpass";
 process.env.nutritionxAppId = "nxTestAppId";
 process.env.nutritionxAppKey = "nxTestAppKey";
 
 import "./mocks/nutritionx";
-import "./mocks/typeorm";
+
 // tslint:disable
 import { startServer } from "../";
 

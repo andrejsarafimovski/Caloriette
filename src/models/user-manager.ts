@@ -83,13 +83,14 @@ export class UserManager {
                 .replace(/[lL][tT]/g, "<"); // lt
             where.push(parsedFilter);
         }
-        return this.userTable
-            .createQueryBuilder("Users")
-            .select(["email", "expectedCaloriesPerDay", "name", "surname"])
+        const users = await this.userTable
+            .createQueryBuilder("user")
+            .select(["user.email", "user.expectedCaloriesPerDay", "user.name", "user.surname"])
             .where(where.join(" AND "))
             .take(limit)
             .skip(skip)
             .getMany();
+        return { users };
     }
 
     async update(updateData: UpdateUserRequest): Promise<UpdateUserResponse> {

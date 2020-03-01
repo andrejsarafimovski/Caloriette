@@ -14,7 +14,7 @@ interface JWTPayload {
 
 type PathParameter = "email" | "id";
 
-export function authorize(param?: PathParameter) {
+export function authorize() {
     return async (req: Request, _res: Response, next: NextFunction) => {
         const authorization = req.get("Authorization");
         if (!authorization) {

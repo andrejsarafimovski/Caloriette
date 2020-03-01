@@ -11,6 +11,7 @@ const {
     PORT,
     jwtSecret,
     hashSecret,
+    databaseType,
     databaseHost,
     databasePort,
     databaseName,
@@ -24,6 +25,7 @@ const {
 if (
     !nutritionxAppId ||
     !nutritionxAppKey ||
+    !databaseType ||
     !databaseHost ||
     !databasePort ||
     !databaseName ||
@@ -49,6 +51,7 @@ export const config = {
         appKey: nutritionxAppKey
     },
     database: {
+        type: databaseType,
         host: databaseHost,
         port: parseInt(databasePort),
         password: databasePassword,
