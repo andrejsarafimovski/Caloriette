@@ -9,10 +9,10 @@ import { UserManager } from "../models/user-manager";
 const app = express();
 
 /**
- * Creates a user - SIGNUP
+ * Signs up a user - SIGNUP
  */
 app.post(
-    "/",
+    "/signup",
     parseJSON(),
     validation("signupUserRequest"),
     errorHandler.wrap(req => {
@@ -45,6 +45,22 @@ app.get(
         const { limit, skip, filter } = req.query;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
         return new UserManager(authUserEmail, authUserRole).getAll(limit, skip, filter);
+    })
+);
+
+
+/**
+ * Creates a user
+ */
+app.post(
+    "/",
+    authorize(),
+    parseJSON(),
+    validation("createUserRequest"),
+    errorHandler.wrap(req => {
+        const { body } = req;
+        const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
+        return new UserManager(authUserEmail, authUserRole).create(body);
     })
 );
 

@@ -1,10 +1,10 @@
 import { assert } from "chai";
 import HTTP from "http-status-codes";
-import { CalorietteApi } from "../../sdk/axios";
+import { CalorietteApi, CreateUserRequestRoleEnum } from "../../sdk/axios";
 import { errorTest } from "../lib/error-test";
 
 // tslint:disable
-describe("Integration tests", () => {
+describe("User Integration tests", () => {
 
     let service: CalorietteApi;
     let serverAddress: string;
@@ -20,6 +20,20 @@ describe("Integration tests", () => {
     before(() => {
         serverAddress = `http://localhost:${process.env.PORT}`;
         service = new CalorietteApi({}, serverAddress);
+    });
+
+    it("Should not be able to access api with no access token", async () => {
+        await errorTest(
+            new CalorietteApi({}, serverAddress).getRecords(),
+            HTTP.UNAUTHORIZED,
+            "Should not be able to access api with No Access Token"
+        );
+        await errorTest(
+            new CalorietteApi({ accessToken: "invalidtoken132" }, serverAddress).getRecords(),
+            HTTP.UNAUTHORIZED,
+            "Should not be able to access api with invalid Access Token"
+        );
+
     });
 
     it("Should be able to signup a user", async () => {
@@ -67,6 +81,21 @@ describe("Integration tests", () => {
         );
     });
 
+    it("Should not be able to create a user with user role", async () => {
+        await errorTest(
+            service.createUser({
+                email: "testuseremail@gmail.com",
+                name: "TestUserName",
+                surname: "TestUsersurname",
+                expectedCaloriesPerDay: 1000,
+                password: "MYTestUserPAssword",
+                role: CreateUserRequestRoleEnum.User,
+            }),
+            HTTP.FORBIDDEN,
+            "Should not be able to createa a user with no permissions"
+        );
+    });
+
     it("Should be able to get all users data", async () => {
         const getAllUsersResponse = await service.getUsers();
         assert.exists(getAllUsersResponse.data);
@@ -88,6 +117,11 @@ describe("Integration tests", () => {
         assert.equal(getUserResponse.data.name, user.name);
         assert.equal(getUserResponse.data.surname, user.surname);
 
+        await errorTest(
+            service.getUser("anotherUserEmail"),
+            HTTP.FORBIDDEN,
+            "Should not be able to get another user"
+        );
     });
 
     it("Should be able to get a users records", async () => {
@@ -129,6 +163,18 @@ describe("Integration tests", () => {
         const getRecordsResponse = await service.getRecords();
         assert.exists(getRecordsResponse.data);
         assert.isNotEmpty(getRecordsResponse.data.records);
+
+        await errorTest(
+            service.createRecord({
+                date: "2020-03-01",
+                time: "13:34:30",
+                userEmail: "dummyuseremail@gmail.com",
+                text: "1 chicken risotto",
+                numberOfCalories: 200
+            }),
+            HTTP.FORBIDDEN,
+            "Should not be able to create a record for a different user"
+        );
     });
 
     it("Should be able to update a user record", async () => {
@@ -163,6 +209,11 @@ describe("Integration tests", () => {
             const deleteRecordsResponse = await service.deleteRecord(record.id);
             assert.exists(deleteRecordsResponse.data);
             assert.isTrue(deleteRecordsResponse.data.done);
+            await errorTest(
+                service.getRecord(record.id),
+                HTTP.NOT_FOUND,
+                "Should not be able to get a deleted record"
+            );
         }
 
         getRecordsResponse = await service.getRecords();

@@ -49,6 +49,6 @@ export async function startServer() {
     });
 }
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== "test") /* istanbul ignore next */ { // can't test this
     startServer();
 }

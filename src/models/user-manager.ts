@@ -1,4 +1,4 @@
-import HTTP from "http-status-codes";
+import HTTP, { BAD_REQUEST } from "http-status-codes";
 import { FindManyOptions, getConnection, Repository } from "typeorm";
 
 import { config } from "../config";
@@ -7,20 +7,18 @@ import { codedError } from "../lib/coded-error";
 import { createAccessToken } from "../lib/jwt-authorization";
 import { hashPassword } from "../lib/password-hash";
 import { UserRole } from "../types";
-import { DeleteUserResponse, GetAllUsersResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
+import { CreateUserRequest, CreateUserResponse, DeleteUserResponse, GetAllUsersResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
 import { RecordManager } from "./records-manager";
 
 
 export class UserManager {
     private readonly userTable: Repository<User>;
-    private readonly recordManager: RecordManager;
 
     constructor(
-        authUserEmail: string,
-        authUserRole: UserRole
+        private readonly authUserEmail: string,
+        private readonly authUserRole: UserRole
     ) {
         this.userTable = getConnection().getRepository(User);
-        this.recordManager = new RecordManager(authUserEmail, authUserRole);
     }
 
     static async login({ email, password }: LoginUserRequest): Promise<LoginUserResponse> {
@@ -56,12 +54,30 @@ export class UserManager {
         return { done: true };
     }
 
-    private async getRaw(email: string): Promise<User> {
-        const user = await this.userTable.findOne(email);
-        if (!user) {
-            throw codedError(HTTP.NOT_FOUND, `User ${email} does not exist`);
+    async create(createUser: CreateUserRequest): Promise<CreateUserResponse> {
+        if (this.authUserRole === "user") {
+            throw codedError(HTTP.FORBIDDEN, "User is not authorized to perform this action");
         }
-        return user;
+
+        try {
+            await this.getRaw(createUser.email);
+            throw codedError(HTTP.BAD_REQUEST, `User ${createUser.email} already exist`);
+        } catch (err) {
+            if (err.code !== HTTP.NOT_FOUND) {
+                throw err;
+            }
+        }
+
+        const newUser: User = {
+            email: createUser.email,
+            expectedCaloriesPerDay: createUser.expectedCaloriesPerDay,
+            name: createUser.name,
+            password: hashPassword(createUser.password),
+            role: createUser.role,
+            surname: createUser.surname,
+        };
+        await this.userTable.insert(newUser);
+        return { done: true };
     }
 
     async get(email: string): Promise<GetUserResponse> {
@@ -76,12 +92,12 @@ export class UserManager {
         const where: string[] = ["1 = 1"];
         if (filter) {
             const parsedFilter = filter
-                .replace(/[oO][rR]/g, "OR") // OR
-                .replace(/[aA][nN][dD]/g, "AND") // AND
-                .replace(/[eE][qQ]/g, "=") // equals
-                .replace(/[nN][eE]/g, "!=") // ne
-                .replace(/[gG][tT]/g, ">") // gt
-                .replace(/[lL][tT]/g, "<"); // lt
+                .replace(/ [oO][rR] /g, " OR ") // OR
+                .replace(/ [aA][nN][dD] /g, " AND ") // AND
+                .replace(/ [eE][qQ] /g, " = ") // equals
+                .replace(/ [nN][eE] /g, " != ") // ne
+                .replace(/ [gG][tT] /g, " > ") // gt
+                .replace(/ [lL][tT] /g, " < "); // lt
             where.push(parsedFilter);
         }
         const users = await this.userTable
@@ -106,7 +122,8 @@ export class UserManager {
         };
         await this.userTable.update({ email: updateData.email }, updateUser);
         if (updateData.expectedCaloriesPerDay) {
-            await this.recordManager.updateRecordsCaloriesForUser(user.email, updateData.expectedCaloriesPerDay);
+            await new RecordManager(this.authUserEmail, this.authUserRole)
+                .updateRecordsCaloriesForUser(user.email, updateData.expectedCaloriesPerDay);
         }
         return { done: true };
     }
@@ -116,4 +133,13 @@ export class UserManager {
         await this.userTable.delete(email);
         return { done: true };
     }
+
+    private async getRaw(email: string): Promise<User> {
+        const user = await this.userTable.findOne(email);
+        if (!user) {
+            throw codedError(HTTP.NOT_FOUND, `User ${email} does not exist`);
+        }
+        return user;
+    }
+
 }

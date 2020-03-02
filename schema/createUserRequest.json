@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "schema://updateUserRequest.json",
-    "title": "updateUserRequest",
-    "operationId": "updateUserRequest",
-    "description": "Update User Request Data",
+    "$id": "schema://createUserRequest.json",
+    "title": "createUserRequest",
+    "operationId": "createUserRequest",
+    "description": "Create User Request Data",
     "type": "object",
     "properties": {
         "email": {
@@ -32,10 +32,24 @@
         "password": {
             "type": "string",
             "description": "password for loging into the application"
+        },
+        "role": {
+            "type": "string",
+            "description": "Role of the user",
+            "enum": [
+                "admin",
+                "moderator",
+                "user"
+            ]
         }
     },
     "additionalProperties": false,
     "required": [
-        "email"
+        "name",
+        "surname",
+        "expectedCaloriesPerDay",
+        "password",
+        "email",
+        "role"
     ]
 }

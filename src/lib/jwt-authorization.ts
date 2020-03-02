@@ -15,45 +15,57 @@ interface JWTPayload {
 type PathParameter = "email" | "id";
 
 export function authorize() {
-    return async (req: Request, _res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         const authorization = req.get("Authorization");
         if (!authorization) {
-            throw codedError(HTTP.UNAUTHORIZED, "Missing authorization token");
+            return res
+                .status(HTTP.UNAUTHORIZED)
+                .send(codedError(HTTP.UNAUTHORIZED, "Missing authorization header"));
         }
         const accessToken = authorization.split("Bearer ")[1];
         if (!accessToken) {
-            throw codedError(HTTP.UNAUTHORIZED, "Missing authorization token");
+            return res
+                .status(HTTP.UNAUTHORIZED)
+                .send(codedError(HTTP.UNAUTHORIZED, "Missing authorization token"));
         }
         try {
             jwt.verify(accessToken, config.jwt.secret);
         } catch (err) {
-            throw codedError(HTTP.UNAUTHORIZED, "Invalid authorization token");
+            return res
+                .status(HTTP.UNAUTHORIZED)
+                .send(codedError(HTTP.UNAUTHORIZED, "Invalid authorization token"));
         }
         return next();
     };
 }
 
 export function authenticate(param: PathParameter) {
-    return async (req: Request, _res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         const authorization = req.get("Authorization")!;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(authorization);
         switch (param) {
             case "email": {
                 if (authUserRole === "user" && authUserEmail !== req.params[param]) {
-                    throw codedError(HTTP.FORBIDDEN, "User is not authorized to perform this action");
+                    return res
+                        .status(HTTP.FORBIDDEN)
+                        .send(codedError(HTTP.FORBIDDEN, "User not authorized to perform this action"));
                 }
                 break;
             }
             case "id": {
                 const record = await getConnection().getRepository(Record).findOne(req.params[param]);
                 if (!record) {
-                    break;
+                    return res
+                        .status(HTTP.NOT_FOUND)
+                        .send(codedError(HTTP.NOT_FOUND, `Record with id ${param} not found`));
                 }
                 if (
                     (authUserRole === "user" || authUserRole === "moderator") &&
                     record.userEmail !== authUserEmail
                 ) {
-                    throw codedError(HTTP.FORBIDDEN, "User is not authorized to perform this action");
+                    return res
+                        .status(HTTP.FORBIDDEN)
+                        .send(codedError(HTTP.FORBIDDEN, "User not authorized to perform this action"));
                 }
                 break;
             }

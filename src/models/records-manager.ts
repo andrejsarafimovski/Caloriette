@@ -25,7 +25,7 @@ export class RecordManager {
 
     async get(id: string): Promise<GetRecordResponse> {
         const record = await this.recordTable.findOne(id);
-        if (!record) {
+        if (!record)/* istanbul ignore next */ { // this is already covered with the access management
             throw codedError(HTTP.NOT_FOUND, `Record with id ${id} not found`);
         }
         return record;
@@ -42,12 +42,12 @@ export class RecordManager {
         }
         if (filter) {
             const parsedFilter = filter
-                .replace(/[oO][rR]/g, "OR") // OR
-                .replace(/[aA][nN][dD]/g, "AND") // AND
-                .replace(/[eE][qQ]/g, "=") // equals
-                .replace(/[nN][eE]/g, "!=") // ne
-                .replace(/[gG][tT]/g, ">") // gt
-                .replace(/[lL][tT]/g, "<"); // lt
+                .replace(/ [oO][rR] /g, " OR ") // OR
+                .replace(/ [aA][nN][dD] /g, " AND ") // AND
+                .replace(/ [eE][qQ] /g, " = ") // equals
+                .replace(/ [nN][eE] /g, " != ") // ne
+                .replace(/ [gG][tT] /g, " > ") // gt
+                .replace(/ [lL][tT] /g, " < "); // lt
             where.push(parsedFilter);
         }
         const records = await this.recordTable
