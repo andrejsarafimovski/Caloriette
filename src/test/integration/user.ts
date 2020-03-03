@@ -199,6 +199,40 @@ describe("User Integration tests", () => {
         assert.equal(getRecordResponse.data.numberOfCalories, newNumberOfCalories);
     });
 
+    it("Should not be able to get another user record", async () => {
+        const tempUser = {
+            email: "tempuser@gmail.com",
+            name: "Temp",
+            password: "tempPassWUser2433",
+            surname: "User",
+            expectedCaloriesPerDay: 2400
+        };
+        await new CalorietteApi({}, serverAddress).signupUser(tempUser);
+        const { data: { accessToken } } = await new CalorietteApi({}, serverAddress)
+            .loginUser({ email: tempUser.email, password: tempUser.password });
+
+        const tempUserService = new CalorietteApi({ accessToken }, serverAddress);
+        const tempUserCreateRecordResponse = await tempUserService.createRecord({
+            date: "2019-11-14",
+            time: "19:54:32",
+            userEmail: tempUser.email,
+            text: "172g chicken risotto",
+            numberOfCalories: 292
+        });
+        assert.exists(tempUserCreateRecordResponse.data);
+        assert.isTrue(tempUserCreateRecordResponse.data.done);
+
+        await errorTest(
+            service.getRecord(tempUserCreateRecordResponse.data.id),
+            HTTP.FORBIDDEN,
+            "Should not be able to get a different user's record"
+        );
+
+        const deleteTempUserResponse = await tempUserService.deleteUser(tempUser.email);
+        assert.exists(deleteTempUserResponse.data);
+        assert.isTrue(deleteTempUserResponse.data.done);
+    });
+
     it("Should be able to delete a user record", async () => {
         let getRecordsResponse = await service.getRecords();
         assert.exists(getRecordsResponse.data);

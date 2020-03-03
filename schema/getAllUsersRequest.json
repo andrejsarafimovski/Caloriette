@@ -11,12 +11,12 @@
             "description": "Filter through all users"
         },
         "limit": {
-            "type": "number",
-            "minimum": 0
+            "type": "string",
+            "pattern": "^[0-9]+$"
         },
         "skip": {
-            "type": "number",
-            "minimum": 0
+            "type": "string",
+            "pattern": "^[0-9]+$"
         }
     },
     "additionalProperties": false,

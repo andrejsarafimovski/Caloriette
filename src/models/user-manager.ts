@@ -7,7 +7,7 @@ import { codedError } from "../lib/coded-error";
 import { createAccessToken } from "../lib/jwt-authorization";
 import { hashPassword } from "../lib/password-hash";
 import { UserRole } from "../types";
-import { CreateUserRequest, CreateUserResponse, DeleteUserResponse, GetAllUsersResponse, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
+import { CreateUserRequest, CreateUserResponse, DeleteUserRequest, DeleteUserResponse, GetAllUsersRequest, GetAllUsersResponse, GetUserRequest, GetUserResponse, LoginUserRequest, LoginUserResponse, SignupUserRequest, SignupUserResponse, UpdateUserRequest, UpdateUserResponse } from "../types/schema-generated/index";
 import { RecordManager } from "./records-manager";
 
 
@@ -80,7 +80,7 @@ export class UserManager {
         return { done: true };
     }
 
-    async get(email: string): Promise<GetUserResponse> {
+    async get({ email }: GetUserRequest): Promise<GetUserResponse> {
         const user = await this.userTable.findOne(email, { select: ["email", "expectedCaloriesPerDay", "name", "surname"] });
         if (!user) {
             throw codedError(HTTP.NOT_FOUND, `User ${email} does not exist`);
@@ -88,8 +88,11 @@ export class UserManager {
         return user;
     }
 
-    async getAll(limit?: number, skip?: number, filter?: string): Promise<GetAllUsersResponse> {
-        const where: string[] = ["1 = 1"];
+
+    async getAll({ filter, limit, skip }: GetAllUsersRequest): Promise<GetAllUsersResponse> {
+        let query = this.userTable
+            .createQueryBuilder("user")
+            .select(["user.email", "user.expectedCaloriesPerDay", "user.name", "user.surname"]);
         if (filter) {
             const parsedFilter = filter
                 .replace(/ [oO][rR] /g, " OR ") // OR
@@ -98,16 +101,15 @@ export class UserManager {
                 .replace(/ [nN][eE] /g, " != ") // ne
                 .replace(/ [gG][tT] /g, " > ") // gt
                 .replace(/ [lL][tT] /g, " < "); // lt
-            where.push(parsedFilter);
+            query = query.where(parsedFilter);
         }
-        const users = await this.userTable
-            .createQueryBuilder("user")
-            .select(["user.email", "user.expectedCaloriesPerDay", "user.name", "user.surname"])
-            .where(where.join(" AND "))
-            .take(limit)
-            .skip(skip)
-            .getMany();
-        return { users };
+        if (limit) {
+            query = query.take(parseInt(limit));
+        }
+        if (skip) {
+            query = query.skip(parseInt(skip));
+        }
+        return { users: await query.getMany() };
     }
 
     async update(updateData: UpdateUserRequest): Promise<UpdateUserResponse> {
@@ -128,7 +130,7 @@ export class UserManager {
         return { done: true };
     }
 
-    async delete(email: string): Promise<DeleteUserResponse> {
+    async delete({ email }: DeleteUserRequest): Promise<DeleteUserResponse> {
         await this.getRaw(email);
         await this.userTable.delete(email);
         return { done: true };

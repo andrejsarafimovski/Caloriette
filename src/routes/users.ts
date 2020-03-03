@@ -44,7 +44,7 @@ app.get(
     errorHandler.wrap(req => {
         const { limit, skip, filter } = req.query;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
-        return new UserManager(authUserEmail, authUserRole).getAll(limit, skip, filter);
+        return new UserManager(authUserEmail, authUserRole).getAll({ limit, skip, filter });
     })
 );
 
@@ -75,7 +75,7 @@ app.get(
     errorHandler.wrap(req => {
         const { email } = req.params;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
-        return new UserManager(authUserEmail, authUserRole).get(email);
+        return new UserManager(authUserEmail, authUserRole).get({ email });
     })
 );
 
@@ -107,7 +107,7 @@ app.delete(
     errorHandler.wrap(req => {
         const { email } = req.params;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
-        return new UserManager(authUserEmail, authUserRole).delete(email);
+        return new UserManager(authUserEmail, authUserRole).delete({ email });
     })
 );
 

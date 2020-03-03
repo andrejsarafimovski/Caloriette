@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import HTTP from "http-status-codes";
 import { getConnection } from "typeorm";
+
 import { User } from "../../entities";
 import { CalorietteApi, CreateUserRequestRoleEnum } from "../../sdk/axios";
 import { errorTest } from "../lib/error-test";
@@ -124,7 +125,7 @@ describe("Admin Integration tests", () => {
     });
 
     it("Should be able to get his records", async () => {
-        const getRecordsResponse = await adminService.getRecords();
+        const getRecordsResponse = await adminService.getRecords(undefined, undefined, undefined, adminUser.email);
         assert.exists(getRecordsResponse.data);
         assert.isEmpty(getRecordsResponse.data.records);
     });
@@ -317,7 +318,6 @@ describe("Admin Integration tests", () => {
         assert.isTrue(createUser.data.done);
 
         const getModLessThan2000Cal = await adminService.getUsers(
-            undefined,
             `role eq "${CreateUserRequestRoleEnum.Moderator}" and expectedCaloriesPerDay lt 2000`
         );
         assert.exists(getModLessThan2000Cal.data);
@@ -330,7 +330,6 @@ describe("Admin Integration tests", () => {
         });
 
         const getAllUsersWithUserRole = await adminService.getUsers(
-            undefined,
             `role eq "${CreateUserRequestRoleEnum.User}"`
         );
         assert.exists(getAllUsersWithUserRole.data);
@@ -338,7 +337,6 @@ describe("Admin Integration tests", () => {
 
 
         const getAllUsersUnder2000Cal = await adminService.getUsers(
-            undefined,
             `expectedCaloriesPerDay lt 2000`
         );
         assert.exists(getAllUsersUnder2000Cal.data);
@@ -401,30 +399,29 @@ describe("Admin Integration tests", () => {
         });
 
         const last30DaysRecords = await adminService.getRecords(
-            undefined,
             `(JulianDay("2020-03-03") - JulianDay(date)) gt 30` // julianday is sqlite specific
         );
         assert.exists(last30DaysRecords.data);
         assert.lengthOf(last30DaysRecords.data.records, 3);
 
         const moreThan300CalRecords = await adminService.getRecords(
+            `numberOfCalories gt 300`,
             "2",
-            `numberOfCalories gt 300`
         );
         assert.exists(moreThan300CalRecords.data);
         assert.lengthOf(moreThan300CalRecords.data.records, 2);
 
         const complexFilterRecords = await adminService.getRecords(
-            undefined,
             `(date ne "2020-02-04" or time eq "13:00:00") and numberOfCalories lt 270`,
+            undefined,
             "1"
         );
         assert.exists(complexFilterRecords.data);
         assert.lengthOf(complexFilterRecords.data.records, 1);
 
         const second2Records = await adminService.getRecords(
-            "2",
             undefined,
+            "2",
             "2"
         );
         assert.exists(second2Records.data);

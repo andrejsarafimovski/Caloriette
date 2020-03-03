@@ -6,7 +6,7 @@ import { NutritionX } from "../actions/nutritionx";
 import { Record } from "../entities";
 import { codedError } from "../lib/coded-error";
 import { UserRole } from "../types";
-import { CreateRecordRequest, CreateRecordResponse, DeleteRecordResponse, GetAllRecordsResponse, GetAllUsersResponse, GetRecordResponse, UpdateRecordRequest, UpdateRecordResponse } from "../types/schema-generated";
+import { CreateRecordRequest, CreateRecordResponse, DeleteRecordRequest, DeleteRecordResponse, GetAllRecordsRequest, GetAllRecordsResponse, GetAllUsersResponse, GetRecordRequest, GetRecordResponse, GetUserRequest, UpdateRecordRequest, UpdateRecordResponse } from "../types/schema-generated";
 import { UserManager } from "./user-manager";
 
 
@@ -23,22 +23,29 @@ export class RecordManager {
         this.nutritionX = new NutritionX();
     }
 
-    async get(id: string): Promise<GetRecordResponse> {
+    async get({ id }: GetRecordRequest): Promise<GetRecordResponse> {
         const record = await this.recordTable.findOne(id);
-        if (!record)/* istanbul ignore next */ { // this is already covered with the access management
+        if (!record) {
             throw codedError(HTTP.NOT_FOUND, `Record with id ${id} not found`);
         }
         return record;
     }
 
-    async getAll(userEmail?: string, limit?: number, skip?: number, filter?: string): Promise<GetAllRecordsResponse> {
-        const where: string[] = ["1 = 1"];
+    async getAll({ filter, limit, skip, userEmail }: GetAllRecordsRequest): Promise<GetAllRecordsResponse> {
+        let query = this.recordTable
+            .createQueryBuilder("record");
         if (this.authUserRole === "admin") {
             if (userEmail) {
-                where.push(`userEmail = "${userEmail}"`);
+                query = query.where(`userEmail = "${userEmail}"`);
             }
         } else {
-            where.push(`userEmail = "${this.authUserEmail}"`);
+            query = query.where(`userEmail = "${this.authUserEmail}"`);
+        }
+        if (limit) {
+            query = query.take(parseInt(limit));
+        }
+        if (skip) {
+            query = query.skip(parseInt(skip));
         }
         if (filter) {
             const parsedFilter = filter
@@ -48,15 +55,10 @@ export class RecordManager {
                 .replace(/ [nN][eE] /g, " != ") // ne
                 .replace(/ [gG][tT] /g, " > ") // gt
                 .replace(/ [lL][tT] /g, " < "); // lt
-            where.push(parsedFilter);
+            query = query.andWhere(parsedFilter);
         }
-        const records = await this.recordTable
-            .createQueryBuilder("record")
-            .where(where.join(" AND "))
-            .take(limit)
-            .skip(skip)
-            .getMany();
-        return { records };
+
+        return { records: await query.getMany() };
     }
 
     async create(createRecord: CreateRecordRequest): Promise<CreateRecordResponse> {
@@ -68,7 +70,7 @@ export class RecordManager {
         }
 
         const id = uuid.v4();
-        const user = await new UserManager(this.authUserEmail, this.authUserRole).get(createRecord.userEmail);
+        const user = await new UserManager(this.authUserEmail, this.authUserRole).get({ email: createRecord.userEmail });
         const caloriesForTheDate = await this.getUserCaloriesForTheDate(createRecord.userEmail, createRecord.date);
         const record: Record = {
             date: createRecord.date,
@@ -87,7 +89,7 @@ export class RecordManager {
     }
 
     async update(updateBody: UpdateRecordRequest): Promise<UpdateRecordResponse> {
-        const record = await this.get(updateBody.id);
+        const record = await this.get({ id: updateBody.id });
         const toUpdate: Partial<Record> = {
             date: updateBody.date || record.date,
             time: updateBody.time || record.time,
@@ -106,14 +108,14 @@ export class RecordManager {
         return { done: true };
     }
 
-    async delete(id: string): Promise<DeleteRecordResponse> {
-        await this.get(id);
+    async delete({ id }: DeleteRecordRequest): Promise<DeleteRecordResponse> {
+        await this.get({ id });
         await this.recordTable.delete(id);
         return { done: true };
     }
 
     async updateRecordsCaloriesForUser(userEmail: string, expectedCaloriesPerDay: number) {
-        const { records: userRecords } = await this.getAll(userEmail);
+        const { records: userRecords } = await this.getAll({ userEmail });
         const userRecordsByDate = userRecords.reduce((acc, ur) => {
             if (!acc[ur.date]) {
                 acc[ur.date] = [];

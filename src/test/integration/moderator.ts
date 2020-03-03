@@ -278,7 +278,6 @@ describe("Moderator Integration tests", () => {
         assert.isTrue(createUser.data.done);
 
         const getModLessThan2000Cal = await modService.getUsers(
-            undefined,
             `role eq "${CreateUserRequestRoleEnum.Moderator}" and expectedCaloriesPerDay lt 2000`
         );
         assert.exists(getModLessThan2000Cal.data);
@@ -291,7 +290,6 @@ describe("Moderator Integration tests", () => {
         });
 
         const getAllUsersWithUserRole = await modService.getUsers(
-            undefined,
             `role eq "${CreateUserRequestRoleEnum.User}"`
         );
         assert.exists(getAllUsersWithUserRole.data);
@@ -299,7 +297,6 @@ describe("Moderator Integration tests", () => {
 
 
         const getAllUsersUnder2000Cal = await modService.getUsers(
-            undefined,
             `expectedCaloriesPerDay lt 2000`
         );
         assert.exists(getAllUsersUnder2000Cal.data);

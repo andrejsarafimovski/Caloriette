@@ -18,15 +18,6 @@
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "skip",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+$"
-                        },
-                        "required": false
-                    },
-                    {
-                        "in": "query",
                         "name": "filter",
                         "schema": {
                             "type": "string",
@@ -37,6 +28,15 @@
                     {
                         "in": "query",
                         "name": "limit",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        },
+                        "required": false
+                    },
+                    {
+                        "in": "query",
+                        "name": "skip",
                         "schema": {
                             "type": "string",
                             "pattern": "^[0-9]+$"
@@ -366,19 +366,19 @@
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "limit",
+                        "name": "filter",
                         "schema": {
                             "type": "string",
-                            "pattern": "^[0-9]+$"
+                            "description": "Filter through all records"
                         },
                         "required": false
                     },
                     {
                         "in": "query",
-                        "name": "filter",
+                        "name": "limit",
                         "schema": {
                             "type": "string",
-                            "description": "Filter through all records"
+                            "pattern": "^[0-9]+$"
                         },
                         "required": false
                     },

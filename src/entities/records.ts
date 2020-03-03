@@ -22,7 +22,7 @@ export class Record {
     id: string;
 
     @Column()
-    @ManyToOne(type => User, { cascade: true, nullable: false })
+    @ManyToOne(type => User, { onDelete: "CASCADE", nullable: false })
     userEmail: string;
 
     @Column({
