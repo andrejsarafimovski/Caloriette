@@ -264,6 +264,7 @@ describe("Unit tests", () => {
 
         const getModLessThan2000Cal = await adminUserManager.getAll({
             skip: "3",
+            limit: "10",
             filter: `role eq "moderator" and expectedCaloriesPerDay lt 2000`
         });
         assert.exists(getModLessThan2000Cal);
@@ -348,11 +349,10 @@ describe("Unit tests", () => {
         assert.lengthOf(moreThan300CalRecords.records, 2);
 
         const complexFilterRecords = await adminRecordManager.getAll({
-            skip: "1",
             filter: '(date ne "2020-02-04" or time eq "13:00:00") and numberOfCalories lt 270',
         });
         assert.exists(complexFilterRecords);
-        assert.lengthOf(complexFilterRecords.records, 1);
+        assert.lengthOf(complexFilterRecords.records, 2);
 
         const second2Records = await adminRecordManager.getAll({
             limit: "2",

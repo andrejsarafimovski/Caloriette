@@ -41,11 +41,12 @@ export class RecordManager {
         } else {
             query = query.where(`userEmail = "${this.authUserEmail}"`);
         }
-        if (limit) {
+        if (limit && parseInt(limit)) {
             query = query.take(parseInt(limit));
-        }
-        if (skip) {
-            query = query.skip(parseInt(skip));
+            // must include limit to use skip in MYSQL
+            if (skip && parseInt(skip)) {
+                query = query.skip(parseInt(skip));
+            }
         }
         if (filter) {
             const parsedFilter = filter

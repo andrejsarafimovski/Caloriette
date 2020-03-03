@@ -412,12 +412,10 @@ describe("Admin Integration tests", () => {
         assert.lengthOf(moreThan300CalRecords.data.records, 2);
 
         const complexFilterRecords = await adminService.getRecords(
-            `(date ne "2020-02-04" or time eq "13:00:00") and numberOfCalories lt 270`,
-            undefined,
-            "1"
+            `(date ne "2020-02-04" or time eq "13:00:00") and numberOfCalories lt 270`
         );
         assert.exists(complexFilterRecords.data);
-        assert.lengthOf(complexFilterRecords.data.records, 1);
+        assert.lengthOf(complexFilterRecords.data.records, 2);
 
         const second2Records = await adminService.getRecords(
             undefined,

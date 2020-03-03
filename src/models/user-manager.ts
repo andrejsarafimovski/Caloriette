@@ -103,11 +103,12 @@ export class UserManager {
                 .replace(/ [lL][tT] /g, " < "); // lt
             query = query.where(parsedFilter);
         }
-        if (limit) {
+        if (limit && parseInt(limit)) {
             query = query.take(parseInt(limit));
-        }
-        if (skip) {
-            query = query.skip(parseInt(skip));
+            // must include limit to use skip in MYSQL
+            if (skip && parseInt(skip)) {
+                query = query.skip(parseInt(skip));
+            }
         }
         return { users: await query.getMany() };
     }
