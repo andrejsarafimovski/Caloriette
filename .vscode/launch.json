@@ -11,14 +11,14 @@
             "program": "${workspaceFolder}/dst/index.js",
             // "preLaunchTask": "build",
             "env": {
-                "nutritionxAppId": "ce9582c7",
-                "nutritionxAppKey": "b2ee7e4780c2337d0beef51693e406d0",
+                "nutritionxAppId": "nxTestAppId",
+                "nutritionxAppKey": "nxTestAppKey",
                 "databaseType": "mysql",
                 "databaseHost": "localhost",
                 "databasePort": "3306",
                 "databaseName": "caloriettedb",
-                "databaseUsername": "root",
-                "databasePassword": "root12345",
+                "databaseUsername": "dbuser",
+                "databasePassword": "dbpass",
                 "hashSecret": "MyHashSecret",
                 "jwtSecret": "MyJwtSecret",
                 "PORT": "3000"
