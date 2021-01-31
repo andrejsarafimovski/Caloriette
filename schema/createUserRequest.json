@@ -27,7 +27,8 @@
         },
         "expectedCaloriesPerDay": {
             "type": "number",
-            "description": "Expected daily intake of calories per day for the User"
+            "description": "Expected daily intake of calories per day for the User",
+            "minimum": 0
         },
         "password": {
             "type": "string",

@@ -5,6 +5,7 @@ import * as errorHandler from "../lib/async-response-handler";
 import { authenticate, authorize, extractUserRoleFromAccessToken } from "../lib/jwt-authorization";
 import { validation } from "../lib/validation-schema";
 import { UserManager } from "../models/user-manager";
+import { Dictionary } from "../types";
 
 const app = express();
 
@@ -42,7 +43,7 @@ app.get(
     authorize(),
     validation("getAllUsersRequest"),
     errorHandler.wrap(req => {
-        const { limit, skip, filter } = req.query;
+        const { limit, skip, filter } = req.query as Dictionary<string>;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
         return new UserManager(authUserEmail, authUserRole).getAll({ limit, skip, filter });
     })

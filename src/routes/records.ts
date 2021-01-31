@@ -5,6 +5,7 @@ import * as errorHandler from "../lib/async-response-handler";
 import { authenticate, authorize, extractUserRoleFromAccessToken } from "../lib/jwt-authorization";
 import { validation } from "../lib/validation-schema";
 import { RecordManager } from "../models/records-manager";
+import { Dictionary } from "../types";
 
 const app = express();
 
@@ -31,7 +32,7 @@ app.get(
     authorize(),
     validation("getAllRecordsRequest"),
     errorHandler.wrap(req => {
-        const { limit, skip, userEmail, filter } = req.query;
+        const { limit, skip, userEmail, filter } = req.query as Dictionary<string>;
         const { authUserEmail, authUserRole } = extractUserRoleFromAccessToken(req.get("Authorization")!);
         return new RecordManager(authUserEmail, authUserRole).getAll({ userEmail, limit, skip, filter });
     })

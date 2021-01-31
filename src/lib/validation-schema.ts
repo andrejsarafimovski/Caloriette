@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import HTTP from "http-status-codes";
 
 import schema from "../schema";
+import { Dictionary } from "../types";
 import { codedError } from "./coded-error";
 
 
@@ -49,7 +50,7 @@ function validate(schemaId: string, target: unknown, def = false) {
  */
 export function validation(schemaId: string) {
     return (req: Request, res: Response, next: NextFunction) => {
-        const payload: {} = { ...req.body, ...req.query, ...req.params };
+        const payload: {} = { ...req.body, ...req.query as Dictionary<string>, ...req.params };
         try {
             validate(schemaId, payload);
         } catch (err) /* istanbul ignore next */ {
