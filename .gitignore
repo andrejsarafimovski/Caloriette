@@ -5,6 +5,7 @@ coverage
 .nyc_output
 dst
 **/js
+nestonovo
 package-lock.json
 src/types/schema-generated
 src/sdk/**
